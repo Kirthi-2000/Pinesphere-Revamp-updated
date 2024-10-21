@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Culture</h5>
+                </div>
+                <div class="card-block">
+                    <!-- Your form or content goes here -->
+                    <form style="margin: 25px;" method="post" enctype="multipart/form-data" id="updateForm">
+                        {% csrf_token %}
+                        
+                        <!-- Title -->
+                        <div class="form-field nice-form-group">
+                            <label for="title">Title:</label>
+                            <input type="text" name="title" id="title" value="{{ form.title.value }}" placeholder="Enter title">
+                            <div class="error-message" id="titleError" style="color: red; margin-top: 5px; display: none;"></div>
+                            {% if form.title.errors %}
+                                <div class="error" style="color: red;">{{ form.title.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="form-field nice-form-group">
+                            <label for="content">Content:</label>
+                            <textarea name="content" id="content" placeholder="Enter content">{{ form.content.value }}</textarea>
+                            <div class="error-message" id="contentError" style="color: red; margin-top: 5px; display: none;"></div>
+                            {% if form.content.errors %}
+                                <div class="error" style="color: red;">{{ form.content.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Image -->
+                        <div class="form-field nice-form-group">
+                            <label for="image">Current Image:</label>
+                            {% if image %}
+                                <img src="{{ image }}" alt="Current Image" style="max-width: 300px; height: auto; margin-bottom: 10px;">
+                            {% else %}
+                                <p>No image uploaded yet.</p>
+                            {% endif %}
+                            <label for="image">Upload New Image:</label>
+                            <input type="file" name="image" id="image" accept="image/*">
+                            {% if form.image.errors %}
+                                <div class="error" style="color: red;">{{ form.image.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- URL -->
+                        <div class="form-field nice-form-group">
+                            <label for="url">URL:</label>
+                            <input type="url" name="url" id="url" value="{{ form.url.value }}" placeholder="Enter URL">
+                            <div class="error-message" id="urlError" style="color: red; margin-top: 5px; display: none;"></div>
+                            {% if form.url.errors %}
+                                <div class="error" style="color: red;">{{ form.url.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="nice-form-group">
+                            <button class="btn btn-primary" type="submit">Update</button>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+            <!-- Basic Form Inputs card end -->
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    $(document).ready(function() {
+        $('#updateForm').on('submit', function(event) {
+            // Prevent default form submission
+            event.preventDefault();
+    
+            // Clear previous error messages
+            $('#titleError').hide();
+            $('#contentError').hide();
+            $('#urlError').hide();
+    
+            // Get field values
+            const title = $('#title').val().trim();
+            const content = $('#content').val().trim();
+            const url = $('#url').val().trim();
+    
+            // Function to check for at least one alphabet character
+            function hasAlpha(str) {
+                return /[a-zA-Z]/.test(str);
+            }
+    
+            let isValid = true; // Form validity flag
+    
+            // Title validation
+            if (!title || !hasAlpha(title)) {
+                $('#titleError').text("Title is required and must contain at least one alphabetical character.").show();
+                isValid = false;
+            }
+    
+            // Content validation
+            if (!content || !hasAlpha(content)) {
+                $('#contentError').text("Content is required and must contain at least one alphabetical character.").show();
+                isValid = false;
+            }
+    
+            // URL validation
+            if (!url || !hasAlpha(url)) {
+                $('#urlError').text("URL is required and must contain at least one alphabetical character.").show();
+                isValid = false;
+            }
+    
+            // If the form is not valid, stop here
+            if (!isValid) {
+                return;  // Prevent the form from submitting if validation fails
+            }
+    
+            // If the form is valid, submit it via AJAX
+            const formData = new FormData(this);
+    
+            $.ajax({
+                type: 'POST',
+                url: '{% url "edit_life_at_pinesphere" pk %}', // Adjust the URL
+                data: formData,
+                processData: false, // Prevent jQuery from processing data
+                contentType: false, // Prevent jQuery from overriding content type
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}' // CSRF token for security
+                },
+                success: function(data) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message || 'Your entry has been updated successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "/life_at_pine_post/"; // Redirect after success
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was an error updating your entry. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'Close'
+                    });
+                }
+            });
+        });
+    });
+    
+</script>
+
+
+{% endblock %}

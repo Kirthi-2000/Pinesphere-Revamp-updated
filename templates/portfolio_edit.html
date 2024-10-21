@@ -1,0 +1,205 @@
+{% extends "base.html"%}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        <!-- Basic Form Inputs card start -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Edit Pine News</h5>
+            </div>
+            <div class="card-block">
+                <form style="margin: 25px;" id="portfolio-form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h3>Edit Portfolio</h3>
+                
+                    <!-- Index Number -->
+                    <div class="nice-form-group">
+                        <label for="id_index_num">Index Number</label>
+                        <input type="number" name="index_num" id="id_index_num" value="{{ portfolio_form.instance.index_num }}" required>
+                        <div class="error" id="index_num_error"></div>
+                    </div>
+                
+                    <!-- Current Logo -->
+                    <div class="nice-form-group">
+                        <label for="id_logo">Logo</label>
+                        {% if portfolio_form.instance.logo %}
+                            <div>
+                                <img src="{{ portfolio_form.instance.logo.url }}" alt="Current Logo" width="100" height="auto">
+                                <p>Current Logo</p>
+                            </div>
+                        {% endif %}
+                        <input type="file" name="logo" id="id_logo" accept="image/*">
+                        <div class="error" id="logo_error"></div>
+                    </div>
+                
+                    <!-- Title -->
+                    <div class="nice-form-group">
+                        <label for="id_title">Title</label>
+                        <input type="text" name="title" id="id_title" value="{{ portfolio_form.instance.title }}" required>
+                        <div class="error" id="title_error"></div>
+                    </div>
+                
+                    <!-- Content -->
+                    <div class="nice-form-group">
+                        <label for="id_content">Content</label>
+                        <textarea name="content" id="id_content" rows="3" required>{{ portfolio_form.instance.content }}</textarea>
+                        <div class="error" id="content_error"></div>
+                    </div>
+                
+                    <!-- Client -->
+                    <div class="nice-form-group">
+                        <label for="id_client">Client</label>
+                        <input type="text" name="client" id="id_client" value="{{ portfolio_form.instance.client }}" required>
+                        <div class="error" id="client_error"></div>
+                    </div>
+                
+                    <!-- Developed Using -->
+                    <div class="nice-form-group">
+                        <label for="id_developed_using">Developed Using</label>
+                        <input type="text" name="developed_using" id="id_developed_using" value="{{ portfolio_form.instance.developed_using }}" required>
+                        <div class="error" id="developed_using_error"></div>
+                    </div>
+                
+                    <!-- Purpose -->
+                    <div class="nice-form-group">
+                        <label for="id_purpose">Purpose</label>
+                        <input type="text" name="purpose" id="id_purpose" value="{{ portfolio_form.instance.purpose }}" required>
+                        <div class="error" id="purpose_error"></div>
+                    </div>
+                
+                    <h3 style="margin-top: 30px; color: #333;">Current Images</h3>
+                    <div id="image-fields" style="margin-bottom: 20px;">
+                        {% for image in portfolio.images.all %}
+                            <div class="image-field" style="margin-bottom: 10px;">
+                                <label style="margin-right: 10px; color: #666;">Current Image:</label>
+                                <img src="{{ image.image.url }}" alt="Current Image" width="50" style="margin-right: 10px;">
+                                <input type="checkbox" name="delete_images" value="{{ image.id }}" style="margin-right: 10px;">
+                                <span style="color: #f44336;">Delete Image</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                
+                    <div class="nice-form-group">
+                        <label>Upload New Images (Multiple select): </label>
+                        <input type="file" name="images" accept="image/*" multiple>
+                    </div>
+                    
+                    <div class="nice-form-group">
+                        <button type="submit"  class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+                                        
+                                    </div>
+                           
+            </div> <!-- Close card-block -->
+        </div> <!-- Close card -->
+    </div> <!-- Close col-sm-12 -->
+</div> <!-- Close row -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('portfolio-form');
+        const imageUploadInput = form.querySelector('input[name="images"]');
+        const errorMessageElement = document.createElement('div'); // Create an error message element
+        errorMessageElement.style.color = '#f44336'; // Style for the error message
+        errorMessageElement.style.marginTop = '10px'; // Margin for spacing
+        form.appendChild(errorMessageElement); // Add it to the form
+    
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            let isValid = true;
+    
+            const fieldsToCheck = [
+                { name: 'title', errorId: 'title_error' },
+                { name: 'content', errorId: 'content_error' },
+                { name: 'client', errorId: 'client_error' },
+                { name: 'developed_using', errorId: 'developed_using_error' },
+                { name: 'purpose', errorId: 'purpose_error' }
+            ];
+    
+            // Clear previous error messages
+            fieldsToCheck.forEach(field => {
+                document.getElementById(field.errorId).textContent = '';
+            });
+    
+            // Check each field for alphabetic character
+            fieldsToCheck.forEach(field => {
+                const input = form.querySelector(`[name="${field.name}"]`);
+                const value = input.value;
+    
+                if (!/[a-zA-Z]/.test(value)) {
+                    isValid = false;
+                    const errorElement = document.getElementById(field.errorId);
+                    errorElement.textContent = 'This field must contain at least one alphabetic character.';
+                    errorElement.style.color = 'red'; // Set the text color to red
+                } else {
+                    document.getElementById(field.errorId).textContent = ''; // Clear error message if valid
+                }
+            });
+    
+            // Check the current images
+            const currentImages = [...form.querySelectorAll('#image-fields .image-field input[type="checkbox"]')];
+            const allImagesMarkedForDelete = currentImages.every(checkbox => checkbox.checked);
+            const anyCurrentImage = currentImages.length > 0;
+    
+            // If all current images are marked for deletion, the new image upload is required
+            if (anyCurrentImage && allImagesMarkedForDelete && !imageUploadInput.files.length) {
+                isValid = false;
+                errorMessageElement.textContent = "Please upload at least one new image or uncheck one image to proceed.";
+                // Display the error message using SweetAlert
+                swal("Error!", "Please upload at least one new image or uncheck one image to proceed.", "error");
+            } else {
+                errorMessageElement.textContent = ''; // Clear the error message if valid
+            }
+    
+            if (isValid) {
+                // Create FormData object to send AJAX request
+                const formData = new FormData(form);
+    
+                // AJAX request
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', form.action, true);
+    
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // Show success message and redirect on close or OK
+                        swal("Success!", "Your portfolio has been updated successfully!", "success")
+                            .then(() => {
+                                // Redirect to the portfolio_post page
+                                window.location.href = '/portfolio_post/'; // Change to the actual path of your portfolio_post page
+                            });
+                    } else {
+                        // Show error message and refresh the page
+                        swal("Error!", "There was an error updating your portfolio.", "error")
+                            .then(() => {
+                                // Refresh the page
+                                location.reload();
+                            });
+                    }
+                };
+                
+    
+                xhr.send(formData);
+            }
+        });
+    
+        // Add event listeners to checkboxes to update the error message dynamically
+        currentImages.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Check if all images are marked for deletion
+                const allImagesMarkedForDelete = currentImages.every(cb => cb.checked);
+                if (allImagesMarkedForDelete && !imageUploadInput.files.length) {
+                    errorMessageElement.textContent = "Please upload at least one new image or uncheck one image to proceed.";
+                } else {
+                    errorMessageElement.textContent = ''; // Clear the error message if valid
+                }
+            });
+        });
+    });
+    
+</script>
+
+        
+{% endblock %}

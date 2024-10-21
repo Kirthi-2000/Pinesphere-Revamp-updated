@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>Client Pages</h6>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="row">
+                        <!-- Additional header info if needed -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrollable Table Container -->
+            <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Index Number</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Title</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">URL</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for page in page_obj %}
+                        <tr>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ page.index_num }}</span></td>
+                            
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ page.Title }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ page.url }}</span></td>
+                            <td class="align-middle text-center">
+                                <form id="delete-form-{{ page.pk }}" action="{% url 'client' %}?delete_id={{ page.pk }}" method="POST" style="display: none;">
+                                    {% csrf_token %}
+                                </form>
+                                <a href="{% url 'edit_client_page' page.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deletePage({{ page.pk }})">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination with clickable page numbers -->
+            <div class="pagination-container text-center mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Client</h5>
+                </div>
+                <div class="card-block">
+                    <!-- Add your content here -->
+                    <form style="margin: 25px;" id="clientPageForm" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                        {% csrf_token %}
+                    
+                        <!-- Index Number -->
+                        <div class="nice-form-group">
+                            <label for="id_index_num">Index Number:</label>
+                            <input type="number" id="id_index_num" name="index_num" required>
+                        </div>
+                    
+                        <!-- Image -->
+                        <div class="nice-form-group">
+                            <label for="id_image">Image:</label>
+                            <input type="file" id="id_image" name="image" accept="image/*" required>
+                            <div class="error-message" id="image_error" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <!-- Image 2 -->
+                        <div class="nice-form-group">
+                            <label for="id_image2">Image 2:</label>
+                            <input type="file" id="id_image2" name="image2" accept="image/*" required>
+                            <div class="error-message" id="image2_error" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <!-- Title -->
+                        <div class="nice-form-group">
+                            <label for="id_Title">Title:</label>
+                            <input type="text" id="id_Title" name="Title" required>
+                            <div class="error-message" id="title_error" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <!-- URL -->
+                        <div class="nice-form-group">
+                            <label for="id_url">URL:</label>
+                            <input type="url" id="id_url" name="url" placeholder="Enter a valid URL" required>
+                            <div class="error-message" id="url_error" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <!-- Submit Button -->
+                        <div class="nice-form-group">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </form>
+                </div> <!-- Closing card-block -->
+            </div> <!-- Closing card -->
+        </div> <!-- Closing col-sm-12 -->
+    </div> <!-- Closing row -->
+</div> <!-- Closing page-body -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function validateForm() {
+        // Clear previous error messages
+        document.getElementById('title_error').innerText = '';
+        document.getElementById('url_error').innerText = '';
+        document.getElementById('image_error').innerText = '';
+        document.getElementById('image2_error').innerText = '';
+
+        const title = document.getElementById('id_Title').value;
+        const url = document.getElementById('id_url').value;
+        const image = document.getElementById('id_image').files[0];
+        const image2 = document.getElementById('id_image2').files[0];
+
+        // Validate Title (contains at least one alphabetic character)
+        const titleContainsAlpha = /[a-zA-Z]/.test(title);
+        if (!titleContainsAlpha) {
+            document.getElementById('title_error').innerText = "Title must contain at least one alphabetic character.";
+            return false;
+        }
+
+        // Validate URL (contains at least one alphabetic character)
+        const urlContainsAlpha = /[a-zA-Z]/.test(url);
+        if (!urlContainsAlpha) {
+            document.getElementById('url_error').innerText = "URL must contain at least one alphabetic character.";
+            return false;
+        }
+
+        // Validate if the image file is provided
+        if (!image) {
+            document.getElementById('image_error').innerText = "Please upload an image.";
+            return false;
+        }
+
+        // Validate if the image2 file is provided
+        if (!image2) {
+            document.getElementById('image2_error').innerText = "Please upload the second image.";
+            return false;
+        }
+
+        // All validations passed
+        return true;
+    }
+
+    document.getElementById('clientPageForm').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent form from submitting normally
+    
+        // Run the validation function
+        if (!validateForm()) {
+            return;  // If validation fails, stop further execution
+        }
+    
+        // Create a FormData object from the form
+        const formData = new FormData(this);
+    
+        // Send the form data via AJAX
+        fetch("{% url 'client' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',  // Add CSRF token for security
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Show success message using Swal.fire
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.message,
+                }).then(() => {
+                    // Reload the page after closing the alert
+                    location.reload();
+                });
+                // Optionally reset the form
+                document.getElementById('clientPageForm').reset();
+            } else if (data.status === 'error') {
+                // Show error message using Swal.fire
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: data.message,
+                }).then(() => {
+                    // Reload the page after closing the alert
+                    location.reload();
+                });
+            }
+        })
+        .catch(error => {
+            // Show an error message if the AJAX request fails
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong with the request!',
+            }).then(() => {
+                // Reload the page after closing the alert
+                location.reload();
+            });
+        });
+    });
+    
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function deletePage(pageId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{% url 'delete_client_page' %}",  // Update to new delete URL
+                    type: "POST",
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'delete_id': pageId
+                    },
+                    success: function(response) {
+                        Swal.fire(
+                            'Deleted!',
+                            response.message,
+                            'success'
+                        ).then(() => {
+                            location.reload(); // Reload the page to reflect changes
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire(
+                            'Error!',
+                            xhr.responseJSON.message || 'An error occurred while deleting the page.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    }
+    
+</script>
+
+{% endblock %}

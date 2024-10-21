@@ -1,0 +1,169 @@
+{% extends "base.html"%}
+{% block content %}
+
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Product Launch</h5>
+                </div>
+                <div class="card-block">
+<form style="margin: 25px;" class="nice-form-group" id="notificationForm" enctype="multipart/form-data">
+    <div class="nice-form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+        <div class="error-message" id="titleError" style="color: red; font-size: 12px; display: none;"></div>
+    </div>
+    
+    <div class="nice-form-group">
+        <label for="url">URL:</label>
+        <input type="url" id="url" name="url" required>
+        <div class="error-message" id="urlError" style="color: red; font-size: 12px; display: none;"></div>
+    </div>
+    
+    <div class="nice-form-group">
+        <label for="body">Body:</label>
+        <input type="text" id="body" name="body" required>
+        <div class="error-message" id="bodyError" style="color: red; font-size: 12px; display: none;"></div>
+    </div>
+    
+    <div class="nice-form-group">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image" required>
+        <div class="error-message" id="imageError" style="color: red; font-size: 12px; display: none;"></div>
+    </div>
+    <div class="nice-form-group">
+    <button type="submit" class="btn btn-primary">Send Notification</button>
+    </div>
+</form>
+    
+</div>
+</div>
+<!-- Basic Form Inputs card end -->
+</div>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('notificationForm');
+    
+        // Validation function
+        function validateForm() {
+            // Clear any previous errors
+            const errorMessages = document.querySelectorAll('.error-message');
+            errorMessages.forEach(error => error.style.display = 'none');
+    
+            let hasError = false;
+    
+            // Validate Title
+            const title = document.getElementById('title').value.trim();
+            if (!/[a-zA-Z]/.test(title)) {
+                document.getElementById('titleError').textContent = "Title must contain at least one alphabetical character.";
+                document.getElementById('titleError').style.display = 'block';
+                hasError = true;
+            }
+    
+            // Validate URL
+            const url = document.getElementById('url').value.trim();
+            if (!url || !/https?:\/\/\S+/.test(url)) {
+                document.getElementById('urlError').textContent = "Please enter a valid URL.";
+                document.getElementById('urlError').style.display = 'block';
+                hasError = true;
+            }
+    
+            // Validate Body
+            const body = document.getElementById('body').value.trim();
+            if (!/[a-zA-Z]/.test(body)) {
+                document.getElementById('bodyError').textContent = "Body must contain at least one alphabetical character.";
+                document.getElementById('bodyError').style.display = 'block';
+                hasError = true;
+            }
+    
+            // Validate Image (optional based on whether file should be required)
+            const image = document.getElementById('image').files.length;
+            if (!image) {
+                document.getElementById('imageError').textContent = "Please upload an image.";
+                document.getElementById('imageError').style.display = 'block';
+                hasError = true;
+            }
+    
+            return !hasError; // If no errors, return true
+        }
+    
+        // Form submit event
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+    
+            // Run validation and proceed with submission only if validation passes
+            if (validateForm()) {
+                const title = document.getElementById('title').value;
+                const body = document.getElementById('body').value;
+                const url = document.getElementById('url').value;
+                const imageFile = document.getElementById('image').files[0];
+    
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('body', body);
+                formData.append('url', url);
+                formData.append('image', imageFile);
+    
+                // Fetch request
+                fetch('/send-notification/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    console.log('Response status:', response.status); // Check the response status
+                    return response.json();
+                })
+                .then(result => {
+                    console.log('Result:', result); // Log the result for debugging
+                    // Check the result and show appropriate SweetAlert
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Notification Sent',
+                            text: result.message, // Use the message from the result
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: result.error || 'Failed to send notification. Please try again.',
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending notification:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while sending the notification.',
+                    });
+                });
+            }
+        });
+    
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+    </script>
+{% endblock %}

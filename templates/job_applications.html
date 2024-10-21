@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Date Filter Form -->
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>Unreviewed Job Applications</h6>
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+                <form method="GET" action="{% url 'job_applications' %}" class="mb-3">
+                    <div class="d-flex align-items-center flex-wrap" style="margin: 10px;">
+                        <div class="nice-form-group me-2"> <!-- Added margin end -->
+                            <label for="start_date_unreviewed" class="small">Start Date:</label>
+                            <input type="date" name="start_date_unreviewed" id="start_date_unreviewed"  class="form-control form-control-sm" value="{{ start_date_unreviewed}}">
+                        </div>
+                        <div class="nice-form-group"> <!-- Removed margin from here -->
+                            <label for="end_date_unreviewed" class="small">End Date:</label>
+                            <input type="date" name="end_date_unreviewed" id="end_date_unreviewed" class="form-control form-control-sm" value="{{ end_date_unreviewed}}">
+                        </div>
+                    </div>
+                    <div class="form-group mt-3" style="margin-left: 10px;">
+                        <button type="submit" class="btn btn-primary btn-sm me-2">Filter</button>
+                        <a href="{% url 'job_applications' %}" class="btn btn-secondary btn-sm">Reset</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Scrollable Table Container -->
+            <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Job Title</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Name</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Email</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Location</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Experience</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Resume</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Status</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidate in page_obj_unreviewed %}
+                        <tr id="candidate-{{ candidate.id }}">
+                            <td class="align-middle text-center">{{ candidate.job_id }} </td>
+                            <td class="align-middle text-center">{{ candidate.first_name }} {{ candidate.last_name }}</td>
+                            <td class="align-middle text-center">{{ candidate.email_address }}</td>
+                            <td class="align-middle text-center">{{ candidate.location }}</td>
+                            <td class="align-middle text-center">{{ candidate.experience }}</td>
+                            <td class="align-middle text-center">
+                                {% if candidate.resume %}
+                                    <a href="{{ candidate.resume.url }}" class="badge badge-sm bg-gradient-primary" target="_blank">View</a>
+                                {% else %}
+                                    <span class="badge badge-sm bg-gradient-warning">No Resume</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td class="align-middle text-center">
+                                <select class="form-control status-dropdown" data-candidate-id="{{ candidate.id }}" data-name="{{candidate.first_name}}" data-email="{{ candidate.email_address }}">
+                                    <option value="unreviewed" {% if candidate.status == 'unreviewed' %}selected{% endif %}>Unreviewed</option>
+                                    <option value="shortlisted" {% if candidate.status == 'shortlisted' %}selected{% endif %}>Shortlisted</option>
+                                    <option value="rejected" {% if candidate.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </td>
+                            <td class="align-middle text-center">
+                                <button class="btn btn-danger btn-sm delete-btn" data-candidate-id="{{ candidate.id }}">Delete</button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No unreviewed job applications found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container text-center mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj_unreviewed.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page_unreviewed={{ page_obj_unreviewed.previous_page_number }}{% if start_date_unreviewed %}&start_date_unreviewed={{ start_date_unreviewed }}{% endif %}{% if end_date_unreviewed %}&end_date_unreviewed={{ end_date_unreviewed }}{% endif %}">Prev</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj_unreviewed.paginator.page_range %}
+                        {% if num > page_obj_unreviewed.number|add:-3 and num < page_obj_unreviewed.number|add:3 %}
+                            <li class="page-item {% if page_obj_unreviewed.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page_unreviewed={{ num }}{% if start_date_unreviewed %}&start_date_unreviewed={{ start_date_unreviewed }}{% endif %}{% if end_date_unreviewed %}&end_date_unreviewed={{ end_date_unreviewed }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj_unreviewed.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page_unreviewed={{ page_obj_unreviewed.next_page_number }}{% if start_date_unreviewed %}&start_date_unreviewed={{ start_date_unreviewed }}{% endif %}{% if end_date_unreviewed %}&end_date_unreviewed={{ end_date_unreviewed }}{% endif %}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>Shortlisted Candidates</h6> <!-- Changed title -->
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+                <form method="GET" action="{% url 'job_applications' %}" class="mb-3"> <!-- Updated URL if necessary -->
+                    <div class="d-flex align-items-center flex-wrap" style="margin: 10px;">
+                        <div class="nice-form-group me-2"> <!-- Added margin end -->
+                            <label for="start_date_shortlisted" class="small">Start Date:</label>
+                            <input type="date" name="start_date_shortlisted" id="start_date_shortlisted" class="form-control form-control-sm" value="{{ start_date|default_if_none:'' }}">
+                        </div>
+                        <div class="nice-form-group"> <!-- Removed margin from here -->
+                            <label for="end_date_shortlisted" class="small">End Date:</label>
+                            <input type="date" name="end_date_shortlisted" id="end_date_shortlisted" class="form-control form-control-sm" value="{{ end_date|default_if_none:'' }}">
+                        </div>
+                    </div>
+                    <div class="form-group mt-3" style="margin-left: 10px;">
+                        <button type="submit" class="btn btn-primary btn-sm me-2">Filter</button>
+                        <a href="{% url 'job_applications' %}" class="btn btn-secondary btn-sm">Reset</a> <!-- Updated URL if necessary -->
+                    </div>
+                </form>
+            </div>
+
+            <!-- Scrollable Table Container -->
+            <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Job Title</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Name</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Email</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Location</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Experience</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Resume</th>
+
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Status</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidate in page_obj_shortlisted %}
+                        <tr id="candidate-{{ candidate.id }}">
+                            <td class="align-middle text-center">{{ candidate.job_id }} </td>
+                            <td class="align-middle text-center">{{ candidate.first_name }} {{ candidate.last_name }}</td>
+                            <td class="align-middle text-center">{{ candidate.email_address }}</td>
+                            <td class="align-middle text-center">{{ candidate.location }}</td>
+                            <td class="align-middle text-center">{{ candidate.experience }}</td>
+                            <td class="align-middle text-center">
+                                {% if candidate.resume %}
+                                    <a href="{{ candidate.resume.url }}" class="badge badge-sm bg-gradient-primary" target="_blank">View</a>
+                                {% else %}
+                                    <span class="badge badge-sm bg-gradient-warning">No Resume</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle text-center">
+                                <select class="form-control status-dropdown" data-candidate-id="{{ candidate.id }}" data-name="{{candidate.first_name}}" data-email="{{ candidate.email_address }}">
+                                    <option value="unreviewed" {% if candidate.status == 'unreviewed' %}selected{% endif %}>Unreviewed</option>
+                                    <option value="shortlisted" {% if candidate.status == 'shortlisted' %}selected{% endif %}>Shortlisted</option>
+                                    <option value="rejected" {% if candidate.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </td>
+                            <td class="align-middle text-center">
+                                <button class="btn btn-danger btn-sm delete-btn" data-candidate-id="{{ candidate.id }}">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container text-center mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj_shortlisted.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj_shortlisted.previous_page_number }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Prev</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj_shortlisted.paginator.page_range %}
+                        {% if num > page_obj_shortlisted.number|add:-3 and num < page_obj_shortlisted.number|add:3 %}
+                            <li class="page-item {% if page_obj_shortlisted.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj_shortlisted.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj_shortlisted.next_page_number }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>Rejected Job Applications</h6> <!-- Changed title -->
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+                <form method="GET" action="{% url 'job_applications' %}" class="mb-3">
+                    <div class="d-flex align-items-center flex-wrap" style="margin: 10px;">
+                        <div class="nice-form-group me-2"> <!-- Added margin end -->
+                            <label for="start_date_rejected" class="small">Start Date:</label>
+                            <input type="date" name="start_date_rejected" id="start_date_rejected" class="form-control form-control-sm" value="{{ start_date|default_if_none:'' }}">
+                        </div>
+                        <div class="nice-form-group"> <!-- Removed margin from here -->
+                            <label for="end_date_rejected" class="small">End Date:</label>
+                            <input type="date" name="end_date_rejected" id="end_date_rejected" class="form-control form-control-sm" value="{{ end_date|default_if_none:'' }}">
+                        </div>
+                    </div>
+                    <div class="form-group mt-3" style="margin-left: 10px;">
+                        <button type="submit" class="btn btn-primary btn-sm me-2">Filter</button>
+                        <a href="{% url 'job_applications' %}" class="btn btn-secondary btn-sm">Reset</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Scrollable Table Container -->
+            <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Job Title</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Name</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Email</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Location</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Experience</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Resume</th>
+
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Status</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidate in page_obj_rejected %}
+                        <tr id="candidate-{{ candidate.id }}">
+                            <td class="align-middle text-center">{{ candidate.job_id }} </td>
+                            <td class="align-middle text-center">{{ candidate.first_name }} {{ candidate.last_name }}</td>
+                            <td class="align-middle text-center">{{ candidate.email_address }}</td>
+                            <td class="align-middle text-center">{{ candidate.location }}</td>
+                            <td class="align-middle text-center">{{ candidate.experience }}</td>
+                            <td class="align-middle text-center">
+                                {% if candidate.resume %}
+                                    <a href="{{ candidate.resume.url }}" class="badge badge-sm bg-gradient-primary" target="_blank">View</a>
+                                {% else %}
+                                    <span class="badge badge-sm bg-gradient-warning">No Resume</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle text-center">
+                                <select class="form-control status-dropdown" data-candidate-id="{{ candidate.id }}" data-name="{{candidate.first_name}}" data-email="{{ candidate.email_address }}">
+                                    <option value="unreviewed" {% if candidate.status == 'unreviewed' %}selected{% endif %}>Unreviewed</option>
+                                    <option value="shortlisted" {% if candidate.status == 'shortlisted' %}selected{% endif %}>Shortlisted</option>
+                                    <option value="rejected" {% if candidate.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </td>
+                            <td class="align-middle text-center">
+                                <button class="btn btn-danger btn-sm delete-btn" data-candidate-id="{{ candidate.id }}">Delete</button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No rejected job applications found.</td> <!-- Updated message -->
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container text-center mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj_rejected.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj_rejected.previous_page_number }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Prev</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj_rejected.paginator.page_range %}
+                        {% if num > page_obj_rejected.number|add:-3 and num < page_obj_rejected.number|add:3 %}
+                            <li class="page-item {% if page_obj_rejected.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj_rejected.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj_rejected.next_page_number }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const statusDropdowns = document.querySelectorAll('.status-dropdown');
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+    
+        // Handle status changes (with Swal message and refresh)
+        // Function to show loading indicator
+// Function to show loading spinner
+function showLoading() {
+    const loadingSpinner = document.createElement('div');
+    loadingSpinner.id = 'loadingSpinner';
+    
+    // Style the spinner
+    loadingSpinner.style.position = 'fixed';
+    loadingSpinner.style.top = '50%';
+    loadingSpinner.style.left = '50%';
+    loadingSpinner.style.transform = 'translate(-50%, -50%)';
+    loadingSpinner.style.zIndex = '9999';
+    
+    // Add a CSS class for the spinner (simple animation)
+    loadingSpinner.innerHTML = `
+        <div style="
+            width: 50px; 
+            height: 50px; 
+            border: 8px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite;">
+        </div>
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    `;
+
+    document.body.appendChild(loadingSpinner);
+}
+
+// Function to hide loading spinner
+function hideLoading() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (loadingSpinner) {
+        document.body.removeChild(loadingSpinner);
+    }
+}
+
+// Add event listeners for dropdowns
+statusDropdowns.forEach(function (dropdown) {
+    dropdown.addEventListener('change', function () {
+        const candidateId = this.getAttribute('data-candidate-id');
+        const newStatus = this.value;
+        const email = this.getAttribute('data-email');  // Get the email from the data attribute
+        const name = this.getAttribute('data-name');
+
+        // Show loading spinner
+        showLoading();
+
+        // Send AJAX request to update the status
+        fetch(`/update_status/${candidateId}/${newStatus}/${email}/${name}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Hide loading spinner
+            hideLoading();
+
+            if (data.status === 'success') {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Status updated successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Refresh the page after closing the popup
+                    location.reload();
+                });
+            } else {
+                Swal.fire('Error!', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            // Hide loading spinner
+            hideLoading();
+
+            console.error('Error:', error);
+            Swal.fire('Error!', 'An error occurred while updating the status.', 'error');
+        });
+    });
+});
+
+
+        // Handle delete button click
+        deleteButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                const candidateId = this.getAttribute('data-candidate-id');
+    
+                // Show SweetAlert confirmation
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you really want to delete this candidate?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If confirmed, send delete request
+                        fetch(`/delete_candidate/${candidateId}/`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Candidate has been deleted.',
+                                    'success'
+                                ).then(() => {
+                                    // Refresh the page after Swal confirmation
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Error!', data.message, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire('Error!', 'An error occurred while deleting the candidate.', 'error');
+                        });
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock %}

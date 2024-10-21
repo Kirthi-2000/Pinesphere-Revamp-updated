@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>Portfolio Details</h6>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="row">
+                        <!-- Add any additional info or stats here if needed -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrollable Table Container -->
+            <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Index Number</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Title</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Created At</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for portfolio in page_obj %}
+                        <tr>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ portfolio.index_num }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ portfolio.title }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ portfolio.created_at }}</span></td>
+                            <td class="align-middle text-center">
+                                <form id="delete-form-{{ portfolio.pk }}" action="{% url 'delete_portfolio' portfolio.pk %}" method="POST" style="display: none;">
+                                    {% csrf_token %}
+                                </form>
+                                <a href="{% url 'edit_portfolio' portfolio.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deletePortfolio({{ portfolio.pk }})">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination with clickable page numbers -->
+            <div class="pagination-container text-center mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Add Portfolio</h5>
+                </div>
+                <div class="card-block">
+                    <form class="forms" style="margin: 25px" method="post" enctype="multipart/form-data" onsubmit="submitForm(event)">
+                        {% csrf_token %}
+                    
+                        <!-- Index Number -->
+                        <div class="nice-form-group">
+                            <label for="id_index_num">Index Number</label>
+                            <input type="number" id="id_index_num" name="index_num" placeholder="Index Number" required>
+                        </div>
+                        <div class="error-message" id="index_num_error"></div>
+                    
+                        <!-- Logo -->
+                        <div class="nice-form-group">
+                            <label for="id_logo">Logo</label>
+                            <input type="file" id="id_logo" name="logo" required accept="image/*">
+                        </div>
+                        <div class="error-message" id="logo_error"></div>
+                    
+                        <!-- Title -->
+                        <div class="nice-form-group">
+                            <label for="id_title">Title</label>
+                            <input type="text" id="id_title" name="title" required>
+                        </div>
+                        <div class="error-message" id="title_error"></div>
+                    
+                        <!-- Content -->
+                        <div class="nice-form-group">
+                            <label for="id_content">Content</label>
+                            <textarea id="id_content" name="content" rows="3" required></textarea>
+                        </div>
+                        <div class="error-message" id="content_error"></div>
+                    
+                        <!-- Client -->
+                        <div class="nice-form-group">
+                            <label for="id_client">Client</label>
+                            <input type="text" id="id_client" name="client" required>
+                        </div>
+                        <div class="error-message" id="client_error"></div>
+                    
+                        <!-- Developed Using -->
+                        <div class="nice-form-group">
+                            <label for="id_developed_using">Developed Using</label>
+                            <input type="text" id="id_developed_using" name="developed_using" required>
+                            <div class="error-message" id="developed_using_error"></div>
+            
+                        </div>
+                    
+                        <!-- Purpose -->
+                        <div class="nice-form-group">
+                            <label for="id_purpose">Purpose</label>
+                            <input type="text" id="id_purpose" name="purpose" required>
+                        </div>
+                        <div class="error-message" id="purpose_error"></div>
+                    
+                        <!-- Image Fields -->
+                        <div id="image-fields">
+                            <div class="nice-form-group">
+                                <label for="id_images" class="form-label">Upload Images:</label>
+                                <input type="file" name="images" class="form-control-file" accept="image/*" required>
+                            </div>
+                            <div class="error-message" id="images_error"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <button type="button" class="btn btn-secondary" onclick="addImageField()">Add Another Image</button>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <button type="submit" class="btn btn-primary">Save Portfolio</button>
+                        </div>
+                    </form>                
+                </div>
+            </div> <!-- Close card -->
+        </div> <!-- Close col-sm-12 -->
+    </div> <!-- Close row -->
+</div> <!-- Close page-body -->
+<script>
+    function validateForm() {
+        // Clear previous error messages
+        document.getElementById('index_num_error').innerText = '';
+        document.getElementById('logo_error').innerText = '';
+        document.getElementById('title_error').innerText = '';
+        document.getElementById('content_error').innerText = '';
+        document.getElementById('client_error').innerText = '';
+        document.getElementById('developed_using_error').innerText = '';
+        document.getElementById('purpose_error').innerText = '';
+        document.getElementById('images_error').innerText = '';
+    
+        const title = document.getElementById('id_title').value;
+        const content = document.getElementById('id_content').value;
+        const client = document.getElementById('id_client').value;
+        const developedUsing = document.getElementById('id_developed_using').value;
+        const purpose = document.getElementById('id_purpose').value;
+        let isValid = true;
+    
+        // Log values to debug
+        console.log("Title:", title);
+        console.log("Content:", content);
+        console.log("Client:", client);
+        console.log("Developed Using:", developedUsing);
+        console.log("Purpose:", purpose);
+    
+        // Validation logic
+        const titleContainsAlpha = /[a-zA-Z]/.test(title);
+        if (!titleContainsAlpha) {
+            document.getElementById('title_error').innerText = "Title must contain at least one alphabetic character.";
+            isValid = false; 
+        }
+    
+        const contentContainsAlpha = /[a-zA-Z]/.test(content);
+        if (!contentContainsAlpha) {
+            document.getElementById('content_error').innerText = "Content must contain at least one alphabetic character.";
+            isValid = false; 
+        }
+    
+        const clientContainsAlpha = /[a-zA-Z]/.test(client);
+        if (!clientContainsAlpha) {
+            document.getElementById('client_error').innerText = "Client must contain at least one alphabetic character.";
+            isValid = false; 
+        }
+    
+        const developedUsingContainsAlpha = /[a-zA-Z]/.test(developedUsing);
+        if (!developedUsingContainsAlpha) {
+            document.getElementById('developed_using_error').innerText = "Developed Using must contain at least one alphabetic character.";
+            isValid = false; 
+        }
+    
+        const purposeContainsAlpha = /[a-zA-Z]/.test(purpose);
+        if (!purposeContainsAlpha) {
+            document.getElementById('purpose_error').innerText = "Purpose must contain at least one alphabetic character.";
+            isValid = false; 
+        }
+    
+        return isValid; 
+    }
+    function submitForm(event) {
+        event.preventDefault();  // Prevent the default form submission
+
+        if (!validateForm()) {
+            return;  // If validation fails, stop submission
+        }
+
+        // Get the form data
+        const form = event.target;
+        const formData = new FormData(form);
+
+        // Specify your desired URL here
+        const url = '/portfolio_post/'; // Replace with your actual URL
+
+        // Send the form data to the server using AJAX
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // If the form is saved successfully
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload();  // Reload the page when the user clicks OK
+                });
+            } else {
+                // Show an error message if there was a problem
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong!',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
+
+    
+    
+    </script>
+    <script>
+    function addImageField() {
+        const imageFieldsContainer = document.getElementById('image-fields');
+        const newImageField = document.createElement('div');
+        newImageField.className = 'image-field';
+        newImageField.innerHTML = `
+            <div class = "nice-form-group">
+            <label for="id_images">Upload Image:</label>
+            <input type="file" name="images" accept="image/*">
+            </div>
+            
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeImageField(this)">Remove</button>
+            
+        `;
+        imageFieldsContainer.appendChild(newImageField);
+    }
+
+    function removeImageField(button) {
+        const imageField = button.parentElement; // Get the parent div of the button
+        imageField.remove(); // Remove the image field
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function deletePortfolio(portfolioId) {
+            // Confirm deletion
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this portfolio item!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    // Send DELETE request
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('DELETE', `/portfolio/delete/${portfolioId}/`, true); // Adjust URL as necessary
+                    
+                    // Set the CSRF token in the request header
+                    const csrfToken = getCookie('csrftoken'); // Get CSRF token
+                    xhr.setRequestHeader('X-CSRFToken', csrfToken); // Set CSRF token header
+        
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            // Show success message and refresh the page
+                            swal("Success!", "Portfolio deleted successfully!", "success")
+                                .then(() => {
+                                    location.reload(); // Refresh the page
+                                });
+                        } else {
+                            // Show error message and refresh the page
+                            swal("Error!", "There was an error deleting the portfolio.", "error")
+                                .then(() => {
+                                    location.reload(); // Refresh the page
+                                });
+                        }
+                    };
+        
+                    xhr.onerror = function() {
+                        // Handle network errors
+                        swal("Error!", "There was a network error.", "error")
+                            .then(() => {
+                                location.reload(); // Refresh the page
+                            });
+                    };
+        
+                    xhr.send();
+                }
+            });
+        }
+        
+        // Function to get the CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie string begins with the name we want
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+</script>
+<!-- Include SweetAlert 2 CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
+<!-- Include SweetAlert 2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+
+{% endblock %}

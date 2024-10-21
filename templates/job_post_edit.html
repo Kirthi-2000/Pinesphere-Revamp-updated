@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Edit Job Post</h5>
+                </div>
+                <div class="card-block">
+                    <form style="margin: 25px;" id="jobPostForm" method="POST" novalidate onsubmit="return false;">
+                        {% csrf_token %}
+                        
+                        <div class="nice-form-group">
+                            <label for="id_index_num">Index Number:</label>
+                            <input type="number" name="index_num" id="id_index_num" value="{{ form.index_num.value }}" required>
+                            <div class="error-message" id="error_index_num" style="color: red; font-size: 14px; display: none;"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <label for="id_head_tag">Head Tag:</label>
+                            <input type="text" name="head_tag" id="id_head_tag" value="{{ form.head_tag.value }}" required>
+                            <div class="error-message" id="error_head_tag" style="color: red; font-size: 14px; display: none;"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <label for="id_title">Title:</label>
+                            <input type="text" name="title" id="id_title" value="{{ form.title.value }}" required>
+                            <div class="error-message" id="error_title" style="color: red; font-size: 14px; display: none;"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <label for="id_location">Location:</label>
+                            <input type="text" name="location" id="id_location" value="{{ form.location.value }}" required>
+                            <div class="error-message" id="error_location" style="color: red; font-size: 14px; display: none;"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <label for="id_experience">Experience:</label>
+                            <input type="text" name="experience" id="id_experience" value="{{ form.experience.value }}" required>
+                            <div class="error-message" id="error_experience" style="color: red; font-size: 14px; display: none;"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <button type="submit" class="btn btn-primary" onclick="submitJobPostForm()">Update Job Post</button>
+                        </div>
+                    </form>
+                    <!-- Content goes here -->
+                </div> <!-- Closing card-block -->
+            </div> <!-- Closing card -->
+        </div> <!-- Closing col-sm-12 -->
+    </div> <!-- Closing row -->
+</div> <!-- Closing page-body -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<script>
+    function submitJobPostForm() {
+        // Run the validation function
+        if (!validateForm()) {
+            return;  // If validation fails, stop further execution
+        }
+    
+        // Create a FormData object from the form
+        const form = document.getElementById('jobPostForm');
+        const formData = new FormData(form);
+    
+        // Send the form data via AJAX
+        fetch("{% url 'job_post_edit' pk %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',  // Add CSRF token for security
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Show success message using Swal.fire
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.message,
+                }).then(() => {
+                    // Redirect to the desired page after closing the alert
+                    window.location.href = "{% url 'job_post_list_create' %}";
+                });
+            } else if (data.status === 'error') {
+                // Show error message using Swal.fire
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: data.message,
+                });
+            }
+        })
+        .catch(error => {
+            // Show an error message if the AJAX request fails
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong with the request!',
+            });
+        });
+    }
+    
+    function validateForm() {
+        // Hide all error messages initially
+        document.querySelectorAll('.error-message').forEach(msg => msg.style.display = 'none');
+    
+        let isValid = true;
+    
+        // Validate each field for at least one alphabet character
+        const fields = [
+            { id: 'id_head_tag', errorId: 'error_head_tag' },
+            { id: 'id_title', errorId: 'error_title' },
+            { id: 'id_location', errorId: 'error_location' },
+            { id: 'id_experience', errorId: 'error_experience' },
+        ];
+    
+        fields.forEach(field => {
+            const input = document.getElementById(field.id);
+            const errorMessage = document.getElementById(field.errorId);
+            const value = input.value.trim();
+    
+            // Check if the field is empty or does not contain at least one alphabetic character
+            if (value === '' || !/[a-zA-Z]/.test(value)) {
+                errorMessage.textContent = 'This field must contain at least one alphabetic character.';
+                errorMessage.style.display = 'block';
+                isValid = false;
+            }
+        });
+    
+        return isValid;
+    }
+</script>
+
+{% endblock %}

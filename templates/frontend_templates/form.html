@@ -1,0 +1,364 @@
+{% extends "frontend_templates/base.html" %}
+{% load static %} 
+    {% block content %}
+        <div role="main" class="main-container container js-quickedit-main-content">
+            <div class="row">
+               <div class="col-sm-12" role="banner">
+                  <div data-drupal-messages-fallback="" class="hidden"></div>
+               </div>
+               <section class="main-content col order-last col-sm-12" id="content" role="main">
+                  <a href="#main-content" aria-label="This is the main content" id="main-content" tabindex="-1" class="visually-hidden focusable skip-link"></a>
+                  <div id="block-techm-content" class="block block-system block-system-main-block">
+                     <div class="content">
+                        <article role="article" about="/about-us/" class="node node--type-landing-page node--view-mode-full clearfix">
+                           <header>
+                           </header>
+                           <div class="node__content clearfix">
+                              <div class="paragraph maindiagonalbanner paragraph--type--bp-header-section paragraph--view-mode--default" id="vbp-622">
+                                 <div class="fullwidth bg-edge2edge">
+                                    <div class="container">
+                                       <div class="row">
+                                          <div class="header-only-for-hero-banner" role="banner" tabindex="0">
+                                             <div class="show-on-scroll">
+                                                <div class="field field--name-field-bp-headline field--type-string field--label-hidden field__item">
+                                                   <h1>Job Description</h1>
+                                                </div>
+                                             </div>
+                                             <div class="show-on-scroll">
+                                                <div class="job-description">
+                                                   <h2>Technology Innovator</h2>
+                                                   
+                                                   <h3>Overview</h3>
+                                                   <p>Develop innovative tech solutions to drive business growth and agility.</p>
+                                                   
+                                                   <h3>Responsibilities</h3>
+                                                   <ul>
+                                                     <li>Create solutions using emerging technologies.</li>
+                                                     <li>Collaborate to improve processes.</li>
+                                                   </ul>
+                                                 
+                                                  
+                                                 </div>
+                                                 
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 
+                                
+                                 <div class="bg-edge2edge">
+                                    <div class="clip-path">
+                                       <div class="progress-area"></div>
+                                    </div>
+                                    <div class="banner-media-bottom image bottom-right bp-margin-bottom-default bp-margin-top-default bp-padding-bottom-default bp-padding-left-default bp-padding-right-default bp-padding-top-default background-style paragraph paragraph--type--bp-hero-banner paragraph--view-mode--default lazy" id="vbp-634" data-bg="{% static 'assets/images/whoweare.jpg' %}">
+                                       <div class="container">
+                                          <div class="row">
+                                             <div class="col-12">
+                                                <div class="hdr-sec-txt-area">
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div id="block-contactusfooter" class="settings-tray-editable block block-block-content block-block-content1908ee86-f216-4f3c-a22d-886914308eb0" data-drupal-settingstray="editable">
+                                <div class="content">
+                                   <div class="paragraph bg-edge2edge paragraph--type--bp-webform paragraph--view-mode--default paragraph--width--full" id="vbp-3727">
+                                      <div class="container">
+                                         <div class="row">
+                                            <div class="col-12">
+                                               <div class="get-in-touch-component">
+                                                  <h2 class="h6">
+                                                   Apply Now        
+                                                  </h2>
+                                                  <div class="webform-component">
+                                                     <div class="component-introduction">
+                                                        <div class="clearfix text-formatted field field--name-field-bp-component-introduction field--type-text-long field--label-hidden field__item">
+                                                           <p><span>Interested in joining our team?</span>&nbsp;<br><span>We will review your application and respond within 3-5 working days.</span></p>
+                                                        </div>
+                                                     </div>
+                                                     <div class="field field--name-bp-webform-field field--type-webform field--label-hidden field__item">
+                                                      <form class="webform-submission-form webform-submission-add-form webform-submission-get-in-touch-form webform-submission-get-in-touch-add-form webform-submission-get-in-touch-paragraph-3727-form webform-submission-get-in-touch-paragraph-3727-add-form js-webform-details-toggle webform-details-toggle" data-drupal-selector="webform-submission-get-in-touch-paragraph-3727-add-form" method="post" id="webform-submission-get-in-touch-paragraph-3727-add-form" accept-charset="UTF-8">
+                                                         {% csrf_token %}
+                                                         <input type="hidden" name="job_id" value="{{ job_id }}">
+
+                                                         <div data-drupal-selector="edit-flexbox" class="webform-flexbox js-webform-flexbox js-form-wrapper form-group" id="edit-flexbox">
+                                                            <div class="webform-flex webform-flex--1">
+                                                               <div class="webform-flex--container">
+                                                                  <fieldset class="js-form-item js-form-type-textfield form-type-textfield js-form-item-first-name form-item-first-name form-group">
+                                                                     <label for="edit-first-name" class="js-form-required form-required">First Name</label>
+                                                                     <input autocomplete="off" data-drupal-selector="edit-first-name" type="text" id="edit-first-name" name="first_name" value="" size="60" maxlength="255" class="required form-control" required="required" aria-required="true">
+                                                                  </fieldset>
+                                                               </div>
+                                                            </div>
+                                                            <div class="webform-flex webform-flex--1">
+                                                               <div class="webform-flex--container">
+                                                                  <fieldset class="js-form-item js-form-type-textfield form-type-textfield js-form-item-last-name form-item-last-name form-group">
+                                                                     <label for="edit-last-name" class="js-form-required form-required">Last Name</label>
+                                                                     <input autocomplete="off" data-drupal-selector="edit-last-name" type="text" id="edit-last-name" name="last_name" value="" size="60" maxlength="255" class="required form-control" required="required" aria-required="true">
+                                                                  </fieldset>
+                                                               </div>
+                                                            </div>
+                                                            <div class="webform-flex webform-flex--1">
+                                                             <div class="webform-flex--container">
+                                                                <fieldset class="js-form-item js-form-type-textfield form-type-textfield js-form-item-last-name form-item-last-name form-group onfocus onfocus">
+                                                                   <label for="edit-dob" class="js-form-required form-required">Date Of Birth</label>
+                                                                   <input type="date" autocomplete="off" id="edit-dob" name="dob" value="" class="required form-control" required="required" aria-required="true">
+                                                                </fieldset>
+                                                             </div>
+                                                          </div>
+                                                          
+                                                         </div>
+
+                                                         <div data-drupal-selector="edit-flexbox-01" class="webform-flexbox js-webform-flexbox js-form-wrapper form-group" id="edit-flexbox-01">
+                                                            <div class="webform-flex webform-flex--1">
+                                                               <div class="webform-flex--container">
+                                                                  <fieldset class="js-form-item js-form-type-email form-type-email js-form-item-email-address form-item-email-address form-group">
+                                                                     <label for="edit-email-address" class="js-form-required form-required">Email Address</label>
+                                                                     <input autocomplete="off" pattern="^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$" data-webform-pattern-error="Please enter valid email address" data-drupal-selector="edit-email-address" type="email" id="edit-email-address" name="email_address" value="" size="60" maxlength="254" class="form-email required form-control" required="required" aria-required="true">
+                                                                  </fieldset>
+                                                               </div>
+                                                            </div>
+                                                          
+                                                         </div>
+                                                         <div data-drupal-selector="edit-flexbox-02" class="webform-flexbox js-webform-flexbox js-form-wrapper form-group" id="edit-flexbox-02">
+                                                            
+                                                            <div class="webform-flex webform-flex--1">
+                                                               <div class="webform-flex--container">
+                                                                  <fieldset class="js-form-item js-form-type-textfield form-type-textfield js-form-item-phone-number form-item-phone-number form-group">
+                                                                     <label for="edit-phone-number">Phone Number</label>
+                                                                     <input autocomplete="off" data-drupal-selector="edit-phone-number" type="number" id="edit-phone-number" name="phone_number" value="" size="60" maxlength="255" class="form-control">
+                                                                  </fieldset>
+                                                               </div>
+                                                            </div>
+                                                         </div>
+                                                         <div class="webform-flex webform-flex--1">
+                                                          <div class="webform-flex--container">
+                                                             <fieldset class="js-form-item js-form-type-textfield form-type-textfield js-form-item-last-name form-item-last-name form-group">
+                                                                <label for="location" class="js-form-required form-required">Location</label>
+                                                                <input autocomplete="off" data-drupal-selector="edit-last-name" type="text" id="location" name="location" value="" size="60" maxlength="255" class="required form-control" required="required" aria-required="true">
+                                                             </fieldset>
+                                                          </div>
+                                                       </div>
+                                                       <fieldset class="js-form-item js-form-type-select form-type-select js-form-item-type-of-enquiry form-item-type-of-enquiry form-group">
+                                                          <label for="edit-type-of-enquiry" class="js-form-required form-required">Experience</label>
+                                                          <select data-drupal-selector="edit-type-of-enquiry" id="edit-type-of-enquiry" name="experience" class="form-select required form-control" required="required" aria-required="true">
+                                                             <option value="0-1 Year" selected="selected">0-1 Year</option>
+                                                     
+                                                             <option value="1-2 Years">1-2 Years</option>
+                                                             <option value="2-3 Years">2-3 Years</option>
+                                                             <option value="3+ Years">More than 3 years</option>
+                                                             <!-- <option value="Others">Others</option> -->
+                                                          </select>
+                                                       </fieldset>
+                                                       <div class="webform-flex webform-flex--1">
+                                                          <div class="webform-flex--container">
+                                                             <fieldset class="js-form-item js-form-type-textfield form-type-textfield js-form-item-last-name form-item-last-name form-group">
+                                                                <label for="ctc" class="js-form-required form-required">CTC</label>
+                                                                <input autocomplete="off" data-drupal-selector="edit-last-name" type="text" id="ctc" name="ctc" value="" size="60" maxlength="255" class="required form-control" required="required" aria-required="true">
+                                                             </fieldset>
+                                                          </div>
+                                                       </div>
+                                                       <div class="webform-flex webform-flex--1">
+                                                          <div class="webform-flex--container">
+                                                             <fieldset class="js-form-item js-form-type-textfield form-type-textfield js-form-item-last-name form-item-last-name form-group">
+                                                                <label for="notice_period" class="js-form-required form-required">Notice Period</label>
+                                                                <input autocomplete="off" data-drupal-selector="edit-last-name" type="text" id="notice_period" name="notice_period" value="" size="60" maxlength="255" class="required form-control" required="required" aria-required="true">
+                                                             </fieldset>
+                                                          </div>
+                                                       </div>
+                                                       <div class="webform-flex webform-flex--1">
+                                                          <div class="webform-flex--container">
+                                                              <fieldset class="js-form-item js-form-type-file form-type-file js-form-item-resume form-item-resume form-group">
+                                                                  <label for="edit-resume" class="js-form-required form-required">Resume</label>
+                                                                  <input type="file" id="edit-resume" name="resume" accept=".pdf" class="required form-control" required="required" aria-required="true">
+                                                                  <small class="form-text text-muted">Accepted format: PDF</small>
+                                                              </fieldset>
+                                                          </div>
+                                                      </div>
+                                                      
+                                                       <fieldset class="js-form-item js-form-type-select form-type-select js-form-item-type-of-enquiry form-item-type-of-enquiry form-group">
+                                                          <label for="edit-type-of-enquiry" class="js-form-required form-required">Are you willing to relocate </label>
+                                                          <select data-drupal-selector="edit-type-of-enquiry" id="edit-type-of-enquiry" name="relocate" class="form-select required form-control" required="required" aria-required="true">
+                                                             <option value="yes" selected="selected">yes</option>
+                                                     
+                                                             <option value="No">no</option>
+                                                            
+                                                          </select>
+                                                       </fieldset>
+
+                                                        
+                                                         <fieldset class="js-form-item js-form-type-textarea form-type-textarea js-form-item-message form-item-message form-group">
+                                                            <label for="message" class="js-form-required form-required">Describe about you</label>
+                                                            <div class="form-textarea-wrapper">
+                                                               <textarea autocomplete="off" data-drupal-selector="edit-message" id="message" name="message" rows="5" cols="60" placeholder="Type your enquiry here..." class="form-textarea required form-control resize-vertical" required="required" aria-required="true"></textarea>
+                                                            </div>
+                                                         </fieldset>
+                                                         <div class="js-form-item js-form-type-checkbox checkbox form-check js-form-item-by-clicking-on-the-submit-button-you-agree-with-the-terms-condit form-item-by-clicking-on-the-submit-button-you-agree-with-the-terms-condit form-no-label">
+                                                            <label class="form-check-label">
+                                                            <input data-webform-required-error="This field is required" data-drupal-selector="edit-by-clicking-on-the-submit-button-you-agree-with-the-terms-condit" aria-describedby="edit-by-clicking-on-the-submit-button-you-agree-with-the-terms-condit--description" type="checkbox" id="edit-by-clicking-on-the-submit-button-you-agree-with-the-terms-condit" name="by_clicking_on_the_submit_button_you_agree_with_the_terms_condit" value="1" class="form-checkbox required form-check-input" required="required" aria-required="true">
+                                                            </label>
+                                                            <small class="description text-muted">
+                                                               <div id="edit-by-clicking-on-the-submit-button-you-agree-with-the-terms-condit--description" class="webform-element-description">By clicking on the submit button, you agree with the <a href="/privacy-policy" target="_blank">privacy policy</a>.</div>
+                                                            </small>
+                                                         </div>
+                                                         <div class="js-form-item js-form-type-checkbox checkbox form-check js-form-item-subscribe-me form-item-subscribe-me form-no-label">
+                                                            <label class="form-check-label">
+                                                            <input data-webform-required-error="This field is required" data-drupal-selector="edit-subscribe-me" aria-describedby="edit-subscribe-me--description" type="checkbox" id="edit-subscribe-me" name="subscribe_me" value="1" class="form-checkbox form-check-input">
+                                                            </label>
+                                                            <small class="description text-muted">
+                                                               <div id="edit-subscribe-me--description" class="webform-element-description">Subscribe me to the latest updates on events, news from Pinesphere.</div>
+                                                            </small>
+                                                         </div>
+                                                         <div data-drupal-selector="edit-captcha" class="captcha captcha-type-challenge--recaptcha">
+                                                            <div class="captcha__element">
+                                                               <input data-drupal-selector="edit-captcha-sid" type="hidden" name="captcha_sid" value="66326" class="form-control">
+                                                               <input data-drupal-selector="edit-captcha-token" type="hidden" name="captcha_token" value="XlTmHIpiGUOs_cQHC09Nqmh4kkjr88oTcSBCd4MC4Ho" class="form-control">
+                                                               <input data-drupal-selector="edit-captcha-response" type="hidden" name="captcha_response" value="Google no captcha" class="form-control">
+                                                               <div class="g-recaptcha" data-sitekey="6LdxXuwpAAAAAEJtkTX1vSwooo1f4Z86MSB80wDv" data-theme="light" data-type="image"></div>
+                                                               <input data-drupal-selector="edit-captcha-cacheable" type="hidden" name="captcha_cacheable" value="1" class="form-control">
+                                                            </div>
+                                                         </div>
+                                                       
+                                                         <input autocomplete="off" data-drupal-selector="form-pb0lirfdmn6dacxtixjkfhzeqnvggeqxrvzk3uubfs8" type="hidden" name="form_build_id" value="form-PB0LiRfdMN6DacXTiXJKfHZEqNVgGeqXrVzk3UubFs8" class="form-control">
+                                                         <input data-drupal-selector="edit-webform-submission-get-in-touch-paragraph-3727-add-form" type="hidden" name="form_id" value="webform_submission_get_in_touch_paragraph_3727_add_form" class="form-control">
+                                                         <div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper form-group" id="edit-actions--3"><input class="webform-button--submit button button--primary js-form-submit form-submit btn btn-primary btn-square btn-single-layer form-control" data-drupal-selector="edit-submit" type="submit" id="edit-submit" name="op" value="Submit">
+                                                         </div>
+                                                      </form>
+                                                     </div>
+                                                  </div>
+                                               </div>
+                                            </div>
+                                         </div>
+                                      </div>
+                                   </div>
+                                </div>
+                             </div>
+                     
+                              </div>
+                              
+                              
+                                  </div>
+                                 
+                                        <nav role="navigation" class="slick__arrow">
+                                    <button type="button" data-role="none" class="slick-prev" aria-label="Previous" tabindex="0">Previous</button>
+                                            <button type="button" data-role="none" class="slick-next" aria-label="Next" tabindex="0">Next</button>
+                                  </nav>
+                                  </div>
+                              
+                              
+                                  </div>
+                                </div>
+                              </div>    
+                              </div>
+                                  </div>
+                                </div>
+                     </div>
+                  </div>
+               </section>
+            </div>
+        </div>
+
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+         $(document).ready(function() {
+             // Add the loading spinner element to the body
+             $('body').append('<div id="loading-spinner" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999;"><div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div></div></div>'); 
+         
+             $('#webform-submission-get-in-touch-paragraph-3727-add-form').on('submit', function(event) {
+                 event.preventDefault();
+                 $(".error-message").remove(); // Clear previous error messages
+         
+                 let isValid = true;
+         
+                 const fieldsToCheck = [
+                     { id: "edit-first-name", label: "First Name" },
+                     { id: "edit-last-name", label: "Last Name" },
+                     { id: "edit-email-address", label: "Email Address" }, // Corrected
+                     { id: "location", label: "Location" },
+                     { id: "ctc", label: "CTC" },
+                     { id: "notice_period", label: "Notice Period" },
+                     { id: "message", label: "Message" },
+                 ];
+         
+                 fieldsToCheck.forEach(field => {
+                     const input = $("#" + field.id);
+                     const value = input.val();
+                     console.log(`Validating ${field.label}: ${value}`);
+                     if (!/[a-zA-Z]/.test(value.trim())) {  
+                         isValid = false;
+                         const errorMessage = $("<div>")
+                             .addClass("error-message text-danger")
+                             .text(`${field.label} must contain at least one alphabetical character.`);
+                         input.parent().append(errorMessage);
+                     }
+                 });
+         
+                 if (isValid) {
+                     // Show the loading spinner before making the AJAX request
+                     $('#loading-spinner').show();
+                     
+                     var formData = new FormData(this);
+                     for (var pair of formData.entries()) {
+                         console.log(pair[0] + ', ' + pair[1]);
+                     }
+                     
+                     $.ajax({
+                         type: 'POST',
+                         url: '/apply/',
+                         data: formData,
+                         contentType: false,
+                         processData: false,
+                         success: function(response) {
+                             // Hide the loading spinner after receiving the response
+                             $('#loading-spinner').hide();
+                             
+                             if (response.status) {
+                                 Swal.fire({
+                                     icon: 'success',
+                                     title: 'Application Submitted!',
+                                     text: response.message,
+                                     showConfirmButton: true,
+                                     confirmButtonText: 'OK'
+                                 }).then(function() {
+                                     $('#webform-submission-get-in-touch-paragraph-3727-add-form')[0].reset();
+                                 });
+                             } else {
+                                 Swal.fire({
+                                     icon: 'error',
+                                     title: 'Submission Error',
+                                     text: 'Error: ' + response.message,
+                                     showConfirmButton: true,
+                                     confirmButtonText: 'Try Again'
+                                 });
+                             }
+                         },
+                         error: function(xhr, status, error) {
+                             // Hide the loading spinner in case of an error
+                             $('#loading-spinner').hide();
+                             
+                             Swal.fire({
+                                 icon: 'error',
+                                 title: 'An Error Occurred',
+                                 text: 'An error occurred while submitting the application: ' + error,
+                                 showConfirmButton: true,
+                                 confirmButtonText: 'OK'
+                             });
+                         }
+                     });
+                 }
+             });
+         });
+         </script>
+         
+
+     
+        
+     <!-- Include SweetAlert -->
+
+    {% endblock %}

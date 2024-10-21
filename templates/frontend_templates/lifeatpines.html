@@ -1,0 +1,173 @@
+{% extends "frontend_templates/base2.html" %}
+{% load static %} 
+    {% block content %}
+    
+        <div role="main" class="main-container container js-quickedit-main-content">
+         <section>
+            <div class="fullwidth-image__text">
+              
+            </div>
+            <img src="{% static 'Images/Pinesphere_Family.jpg' %}" />
+        </section>
+        <section>
+          <div class="container">
+              <div class="text__effect">
+                  <div class="text__overlay"></div>
+                  <p style="font-size: 4.8rem; letter-spacing: -0.03em; line-height: 1.5;">
+                      Welcome to Our Gallery! Here, we celebrate the joy and camaraderie
+                  </p>
+              </div>
+              <div class="text__effect">
+                  <div class="text__overlay"></div>
+                  <p style="font-size: 4.8rem; letter-spacing: -0.03em; line-height: 1.5;">
+                      of our team through vibrant snapshots of fun activities and events.
+                  </p>
+              </div>
+              <div class="text__effect">
+                  <div class="text__overlay"></div>
+                  <p style="font-size: 4.8rem; letter-spacing: -0.03em; line-height: 1.5;">
+                      We believe that these moments of connection foster creativity
+                  </p>
+              </div>
+              <div class="text__effect">
+                  <div class="text__overlay"></div>
+                  <p style="font-size: 4.8rem; letter-spacing: -0.03em; line-height: 1.5;">
+                      and strengthen our bonds, making our workplace a vibrant space.
+                  </p>
+              </div>
+              <div class="text__effect">
+                  <div class="text__overlay"></div>
+                  <p style="font-size: 4.8rem; letter-spacing: -0.03em; line-height: 1.5;">
+                      Dive in and explore the spirit of #TeamFun captured here!
+                  </p>
+              </div>
+          </div>
+      </section>
+      
+       
+        <section class="join-us">
+            <!-- <div class="join-us__inner">
+                <h2 class="join-us__title">
+                    Join the
+                    <span class="mission">
+                        mission
+                        <svg
+                            viewBox="0 0 634 32"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M1.40051 2.37525C1.40051 2.37525 68.8688 48.875 223.369 20.375C377.869 -8.125 633.4 12.3911 633.4 12.3911"
+                                stroke="black"
+                                stroke-width="4"
+                            />
+                        </svg>
+                    </span>
+                </h2>
+                <p class="join-us__text">
+                    Leave your email to be part of the email list when we
+                    launch.
+                </p>
+                <button>Sign me up</button>
+            </div> -->
+         
+                <!-- <div class="space space--small"></div> -->
+<div class="cards">
+  <div class="card" data-index="0">
+    <div class="card__inner">
+      <div class="card__image-container">
+        <img
+          class="card__image"
+          src="{% static './Images\IMG_9513.jpg' %}"
+        />
+      </div>
+      <div class="card__content">
+        <h1 class="card__title">Team Outing </h1>
+        <p class="card__description">
+          Join our exciting team outings that foster collaboration and fun. Whether it's outdoor adventures or team-building activities, we believe in creating memorable experiences that strengthen our team bonds and spark creativity.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="card" data-index="0">
+    <div class="card__inner">
+      <div class="card__image-container">
+        <img
+          class="card__image"
+          src="{% static './Images\card2.png' %}"
+        />
+      </div>
+      <div class="card__content">
+        <h1 class="card__title">September 5</h1>
+        <p class="card__description">
+          We are excited to announce our rebranding from Pinesphere Academy to Code Boffins! This change reflects our commitment to innovation and excellence in coding education. Stay tuned for new updates as we continue to evolve.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="card" data-index="0">
+    <div class="card__inner">
+      <div class="card__image-container">
+        <img
+          class="card__image"
+          src="{% static './Images\l2.jpg' %}"
+        />
+      </div>
+      <div class="card__content">
+        <h1 class="card__title">Vinayaga Chadhurthi Special</h1>
+        <p class="card__description">
+          Here’s a beautiful image capturing the essence of our Vinayaga Chathurthi celebration. This moment reflects the joy and devotion that marked our festivities.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br>
+<div class="wrapper">
+<div class="caption">Moments Captured: Our Event Highlights</div>
+    <div class="item">
+        <div class="polaroid">
+            <img src="{% static './Images/image3.jpg' %}" alt="Event Image" />
+            <div class="caption">Event</div>
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="polaroid">
+            <img src="{% static './Images/PHOTO-2024-02-01-13-26-02.jpg' %}" alt="Client Appreciation" />
+            <div class="caption">Client Appreciation</div>
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="polaroid">
+            <img src="{% static './Images/movie.jpeg' %}" alt="Movie" />
+            <div class="caption">Movie</div>
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="polaroid">
+            <img src="{% static './Images/cad6533e-7288-4020-82ae-259226e96d4e.jpg' %}" alt="Pongal Celebration" />
+            <div class="caption">Pongal Celebration</div>
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="polaroid">
+            <img src="{% static './Images/IMG_4431.jpg' %}" alt="Birthday Party" />
+            <div class="caption">Birthday Party</div>
+        </div>
+    </div>
+     <div class="item">
+        <div class="polaroid">
+            <img src="{% static './Images/image3.jpg' %}" alt="Event Image" />
+            <div class="caption">Event</div>
+        </div>
+    </div>
+</div>
+ </section>
+       </div>
+        </div>
+    {% endblock %}

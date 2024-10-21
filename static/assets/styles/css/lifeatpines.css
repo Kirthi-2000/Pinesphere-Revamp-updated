@@ -1,0 +1,408 @@
+
+
+
+img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+[data-hidden] {
+    opacity: 0;
+}
+
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
+}
+
+h1,
+h2 {
+    font-size: 16rem;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+
+.text-block {
+    margin-top: 24rem;
+    margin-bottom: 24rem;
+}
+
+.text-block__content {
+    max-width: 44ch;
+}
+
+.fullwidth-image {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    clip-path: polygon(5% 10%, 95% 10%, 95% 90%, 5% 90%);
+}
+
+.fullwidth-image img {
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+
+    /* transform: translateY(-20%); */
+}
+
+.fullwidth-image__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background-color: black;
+    opacity: 0;
+}
+
+.fullwidth-image__text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    color: white;
+}
+
+.fullwidth-image h2 {
+    font-size: 6.4rem;
+    margin-bottom: 1.6rem;
+}
+
+.fullwidth-image p {
+    font-size: 2.4rem;
+    max-width: 48ch;
+}
+
+.join-us {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+}
+
+.join-us__inner {
+    display: grid;
+    place-items: center;
+}
+
+.join-us__title {
+    max-width: 10ch;
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.join-us__text {
+    opacity: 0.5;
+    font-size: 2.4rem;
+    text-align: center;
+    margin-bottom: 6.4rem;
+}
+
+.mission {
+    display: inline-block;
+    position: relative;
+}
+
+.mission svg {
+    position: absolute;
+    bottom: -1rem;
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+}
+
+.text__effect {
+    position: relative;
+}
+.text__overlay {
+    display: block;
+    position: absolute;
+    height: 101%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: white;
+    opacity: 0.7;
+    transform-origin: center right;
+}
+.wrapper {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.polaroid {
+  background: #fff;
+  padding: 1rem;
+  box-shadow: 0 0.2rem 1.2rem rgba(0, 0, 0, 0.2);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.polaroid img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+  .polaroid > img{
+    max-width: 100%;
+    height: auto;
+  }
+  .caption {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 0.5rem;
+    text-align: center;
+    color: #333;
+}
+
+  .item {
+    width: 30%;
+    display: inline-block;
+    margin-top: 2rem;
+    filter: grayscale(100%);
+  }
+  .item {
+    transition: transform 0.3s ease-in-out;
+}
+
+.item:hover {
+    transform: scale(1.05);
+}
+  .item .polaroid:before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    transition: all 0.35s;
+  }
+  .item:nth-of-type(4n+1) {
+    transform: scale(0.8, 0.8) rotate(5deg);
+    transition: all 0.35s;
+  }
+  .item:nth-of-type(4n+1) .polaroid:before {
+    transform: rotate(6deg);
+    height: 20%;
+    width: 47%;
+    bottom: 30px;
+    right: 12px;
+    box-shadow: 0 2.1rem 2rem rgba(0,0,0,0.4);
+  }
+  .item:nth-of-type(4n+2) {
+    transform: scale(0.8, 0.8) rotate(-5deg);
+    transition: all 0.35s;
+  }
+  .item:nth-of-type(4n+2) .polaroid:before {
+    transform: rotate(-6deg);
+    height: 20%;
+    width: 47%;
+    bottom: 30px;
+    left: 12px;
+    box-shadow: 0 2.1rem 2rem rgba(0,0,0,0.4);
+  }
+  .item:nth-of-type(4n+4) {
+    transform: scale(0.8, 0.8) rotate(3deg);
+    transition: all 0.35s;
+  }
+  .item:nth-of-type(4n+4) .polaroid:before {
+    transform: rotate(4deg);
+    height: 20%;
+    width: 47%;
+    bottom: 30px;
+    right: 12px;
+    box-shadow: 0 2.1rem 2rem rgba(0,0,0,0.3);
+  }
+  .item:nth-of-type(4n+3) {
+    transform: scale(0.8, 0.8) rotate(-3deg);
+    transition: all 0.35s;
+  }
+  .item:nth-of-type(4n+3) .polaroid:before {
+    transform: rotate(-4deg);
+    height: 20%;
+    width: 47%;
+    bottom: 30px;
+    left: 12px;
+    box-shadow: 0 2.1rem 2rem rgba(0,0,0,0.3);
+  }
+  .item:hover {
+    filter: none;
+    transform: scale(1, 1) rotate(0deg) !important;
+    transition: all 0.35s;
+  }
+  .item:hover .polaroid:before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    transform: rotate(0deg);
+    height: 90%;
+    width: 90%;
+    bottom: 0%;
+    right: 5%;
+    box-shadow: 0 1rem 3rem rgba(0,0,0,0.2);
+    transition: all 0.35s;
+  }
+  .card {
+    position: sticky;
+    top: 0;
+    background: white !important;
+  }
+
+  .card__inner {
+    will-change: transform;
+    background: white;
+    border-radius: 14px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px hsla(265.3, 20%, 10%, 35%);
+    transform-origin: center top;
+  }
+  
+  .cards {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-rows: repeat(var(--cards-count), var(--card-height));
+    gap: 40px 0;
+  }
+  
+  .card__image-container {
+    display: flex;
+    width: 40%;
+    flex-shrink: 0;
+  }
+   
+  .card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 1;
+  }
+  
+  .card__content {
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card__title {
+    padding: 0;
+    margin: 0;
+    font-size: 60px;
+    font-weight: 600;
+    color: #16263a;
+  }
+  
+  .card__description {
+    line-height: 1.4;
+    font-size: 24px;
+    color: #16263a;
+  }
+  
+  .space {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+    background-color: #16263a;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.space h1 {
+    font-size: .5rem !important;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+  
+  .space--small {
+    height: 40vh;
+  }
+  
+  @media (max-width: 600px) {
+    .card__inner {
+      flex-direction: column;
+    }
+  
+    .card__image-container {
+      width: 100%;
+    }
+  
+    .card__image {
+      aspect-ratio: 16 / 9;
+    }
+  
+    .card__title {
+      font-size: 32px;
+    }
+  
+    .card__description {
+      font-size: 16px;
+    }
+  
+    .card__content {
+      padding: 30px 20px;
+    }
+    p{
+      font-size: .8rem !important;
+      letter-spacing: -0.03em !important;
+      line-height: 1.5 !important;
+    }
+    .item {
+      width: 100%;
+      display: inline-block;
+      margin-top: 2rem;
+      filter: grayscale(100%);
+  }
+  }
+  
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .space h1 {
+      font-size: 2rem;
+  }
+
+  .wrapper {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .space h1 {
+      font-size: 1.5rem;
+  }
+
+  .wrapper {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+  }
+
+  .polaroid img {
+      height: auto;
+  }
+}
+
+  

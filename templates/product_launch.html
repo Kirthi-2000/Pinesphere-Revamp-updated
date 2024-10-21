@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Product Launch</h5>
+                </div>
+                <div class="card-block">
+                    <form id="productLaunchForm" style="margin: 25px;" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="nice-form-group">
+                            <label for="logo">Logo:</label>
+                            <input type="file" id="logo" name="logo" accept="image/*">
+                            {% if product_launch.logo %}
+                                <p>Current Image: <a href="{{ product_launch.logo.url }}" target="_blank">View Image</a></p>
+                            {% endif %}
+                        </div>
+                        <div class="nice-form-group">
+                            <label for="title">Title:</label>
+                            <input type="text" id="title" name="title" value="{{ product_launch.title }}" required>
+                        </div>
+                        <div class="nice-form-group">
+                            <label for="description">Description:</label>
+                            <textarea id="description" name="description" required>{{ product_launch.description }}</textarea>
+                        </div>
+                        <div class="nice-form-group">
+                            <label for="url">Product Launch URL:</label>
+                            <input type="url" id="url" name="url" value="{{ product_launch.url }}" required>
+                        </div>
+                        <div class="nice-form-group">
+                            <label for="image">Main Image:</label>
+                            <input type="file" id="image" name="image" accept="image/*">
+                            {% if product_launch.image %}
+                                <p>Current Image: <a href="{{ product_launch.image.url }}" target="_blank">View Image</a></p>
+                            {% endif %}
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <button class="btn btn-primary" type="submit">Update Product Launch</button>
+                        </div>
+                    </form>
+                    
+    
+</div>
+</div>
+<!-- Basic Form Inputs card end -->
+</div>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+$(document).ready(function () {
+    $('#productLaunchForm').on('submit', function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        // Show a loading message
+        Swal.fire({
+            title: 'Updating...',
+            text: 'Please wait while we update the product launch.',
+            allowOutsideClick: false,
+            onOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Create a FormData object to handle form data and files
+        var formData = new FormData(this);
+
+        // Perform AJAX request
+        $.ajax({
+            type: 'POST',
+            url: '{% url "produch_launch_edit" product_launch.id %}',  // Django URL for updating
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                // Add a buffer before showing the success message
+                setTimeout(() => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Product Launch updated successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Refresh the page after success
+                        }
+                    });
+                }, 1000); // Buffer delay of 1 second before showing success message
+            },
+            error: function (xhr) {
+                // Add a buffer before showing the error message
+                setTimeout(() => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: xhr.responseText || 'An error occurred while updating the product launch.',
+                        icon: 'error',
+                        confirmButtonText: 'Try Again'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Refresh the page after error
+                        }
+                    });
+                }, 1000); // Buffer delay of 1 second before showing error message
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

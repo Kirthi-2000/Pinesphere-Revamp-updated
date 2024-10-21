@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New Enquiry from {{ first_name }} {{ last_name }}</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      color: #333333;
+    }
+    .header {
+      text-align: center;
+      border-bottom: 2px solid #3794d1;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 24px;
+      color: #3794d1;
+    }
+    .content {
+      margin-bottom: 20px;
+    }
+    .content h2 {
+      font-size: 20px;
+      color: #3794d1;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+    .info {
+      margin-bottom: 20px;
+    }
+    .info p {
+      margin: 12px 0;
+      font-size: 16px;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .info strong {
+      display: inline-block;
+      width: 160px;
+      color: #333333;
+      font-weight: bold;
+    }
+    .footer {
+      text-align: center;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+      font-size: 14px;
+      color: #888888;
+    }
+    .highlight {
+      background-color: #3794d1;
+      color: #ffffff;
+      padding: 4px 8px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>New Enquiry from {{ first_name }} {{ last_name }}</h1>
+    </div>
+
+    <div class="content">
+      <h2>Enquiry Summary</h2>
+      <div class="info">
+        <p><strong>Type of Enquiry:</strong> {{ type_of_enquiry }}</p>
+        <p><strong>Full Name:</strong> {{ first_name }} {{ last_name }}</p>
+        <p><strong>Email Address:</strong> {{ email_address }}</p>
+        <p><strong>Phone Number:</strong> {{ phone_number }}</p>
+        <p><strong>Message:</strong> {{ message }}</p>
+        <p><strong>Subscribe Me:</strong> 
+          <span class="highlight">{% if subscribe_me %} Yes {% else %} No {% endif %}</span>
+        </p>
+        <p><strong>Agree to Terms:</strong> 
+          <span class="highlight">{% if agree_terms %} Yes {% else %} No {% endif %}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>An enquiry has been submitted by a user through the Contact Us form.</p>
+      <p>Please review the details above and follow up accordingly.</p>
+    </div>
+  </div>
+</body>
+</html>

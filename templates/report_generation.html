@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="features-section">
+    <div class="container">
+        <div class="features-grid">
+            <a href="{%url 'report_admin' %}" class="feature-card active">
+                <h5 style="color: #fff;">Views</h5>
+            </a>
+            <a href="{%url 'job_report'%}" class="feature-card">
+                <h5>Job</h5>
+            </a>
+            <a href="{%url 'newsletter_subscribers_report'%}" class="feature-card">
+                <h5>Subscribers</h5>
+            </a>
+            <a href="{% url 'internship_report'%}" class="feature-card">
+                <h5>Internship</h5>
+            </a>
+            <a href="{% url 'contactus_report'%}" class="feature-card">
+                <h5>Contact Us</h5>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

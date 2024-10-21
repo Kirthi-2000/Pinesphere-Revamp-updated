@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>Job Posts</h6>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="row">
+                        <!-- Additional header info if needed -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrollable Table Container -->
+            <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Index Number</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Head Tag</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Title</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Location</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Experience</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in jobs %}
+                        <tr>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ job.index_num }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ job.head_tag }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ job.title }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ job.location }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ job.experience }}</span></td>
+                            <td class="align-middle text-center">
+                                <form id="delete-form-{{ job.pk }}" action="{% url 'job_post_delete' job.pk %}" method="POST" style="display: none;">
+                                    {% csrf_token %}
+                                </form>
+                                <a href="{% url 'job_post_edit' job.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteJobPost({{ job.pk }})">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination with clickable page numbers -->
+            <div class="pagination-container text-center mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if jobs.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ jobs.previous_page_number }}">Prev</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in jobs.paginator.page_range %}
+                        {% if num > jobs.number|add:-3 and num < jobs.number|add:3 %}
+                            {% if jobs.number == num %}
+                                <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if jobs.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ jobs.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Job Posts</h5>
+                </div>
+                <div class="card-block">
+                    <!-- Content goes here -->
+                    <form style="margin: 25px;" class="form" method="post" onsubmit="return validateForm()">
+                        {% csrf_token %}
+                    
+                        <div class="nice-form-group">
+                            <label for="id_index_num">Index Number:</label>
+                            <input type="number" name="index_num" id="id_index_num" required>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <label for="id_head_tag">Head Tag:</label>
+                            <input type="text" name="head_tag" id="id_head_tag" required>
+                            <div class="error-message" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <label for="id_title">Title:</label>
+                            <input type="text" name="title" id="id_title" required>
+                            <div class="error-message" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <label for="id_location">Location:</label>
+                            <input type="text" name="location" id="id_location" required>
+                            <div class="error-message" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <label for="id_experience">Experience:</label>
+                            <input type="text" name="experience" id="id_experience" required>
+                            <div class="error-message" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <div class="nice-form-group">
+                            <button type="submit" class="btn btn-primary">
+                                Create Job Post
+                            </button>
+                        </div>
+                    </form>
+                </div> <!-- Closing card-block -->
+            </div> <!-- Closing card -->
+        </div> <!-- Closing col-sm-12 -->
+    </div> <!-- Closing row -->
+</div> <!-- Closing page-body -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function handleResponse(response) {
+    if (response.status === 'success') {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: response.message,
+        }).then((result) => {
+            if (result.isConfirmed || result.isDismissed) {
+                // Redirect to the specified URL
+                location.reload();
+
+            }
+        });
+    } else if (response.status === 'error') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.message,
+        });
+    }
+}
+
+function submitForm(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Run form validation
+    if (validateForm()) {
+        const form = event.target;
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': form.querySelector('input[name="csrfmiddlewaretoken"]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => handleResponse(data))
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred. Please try again.',
+            });
+        });
+    }
+}
+
+document.querySelector('.form').addEventListener('submit', submitForm);
+
+// The validateForm function as you have already written it
+function validateForm() {
+    // Clear previous error messages
+    const errorMessages = document.querySelectorAll('.error-message');
+    errorMessages.forEach(message => message.innerText = '');
+
+    // Get the input fields
+    const headTag = document.getElementById('id_head_tag').value;
+    const title = document.getElementById('id_title').value;
+    const location = document.getElementById('id_location').value;
+    const experience = document.getElementById('id_experience').value;
+
+    let isValid = true;
+
+    // Validate Head Tag
+    if (!/[a-zA-Z]/.test(headTag)) {
+        document.querySelector('#id_head_tag + .error-message').innerText = 'Head Tag must contain at least one alphabetic character.';
+        isValid = false;
+    }
+
+    // Validate Title
+    if (!/[a-zA-Z]/.test(title)) {
+        document.querySelector('#id_title + .error-message').innerText = 'Title must contain at least one alphabetic character.';
+        isValid = false;
+    }
+
+    // Validate Location
+    if (!/[a-zA-Z]/.test(location)) {
+        document.querySelector('#id_location + .error-message').innerText = 'Location must contain at least one alphabetic character.';
+        isValid = false;
+    }
+
+    // Validate Experience
+    if (!/[a-zA-Z]/.test(experience)) {
+        document.querySelector('#id_experience + .error-message').innerText = 'Experience must contain at least one alphabetic character.';
+        isValid = false;
+    }
+
+    return isValid; // Prevent form submission if validation fails
+}
+</script>
+{% endblock %}

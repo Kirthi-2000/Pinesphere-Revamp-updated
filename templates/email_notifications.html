@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Edit Job Post</h5>
+                </div>
+                <div class="card-block">
+                    <form style="margin: 25px;" id="emailTemplateForm" method="POST">
+                        {% csrf_token %}
+                        <div class="nice-form-group">
+                            <input type="hidden" name="mailid" value="{{ selected_template.id }}">
+                            <label for="emailTemplateDropdown">Select a template:</label>
+                            <select id="emailTemplateDropdown" name="template_id" onchange="this.form.submit();">
+                                <option value="">Select a template</option>
+                                {% for template in email_templates %}
+                                    <option value="{{ template.id }}" {% if template.id == selected_template_id %}selected{% endif %}>{{ template.Title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="nice-form-group">
+                            <label>Title:</label>
+                            <input type="text" readonly id="title" name="title" value="{{ selected_template.Title }}">
+                            <span id="titleError" class="error-message"></span>
+                        </div>
+                        <div class="nice-form-group">
+                            <label>Subject:</label>
+                            <input type="text" id="subject" name="subject" value="{{ selected_template.Subject }}">
+                            <span id="subjectError" class="error-message"></span>
+                        </div>
+                        <div class="nice-form-group">
+                            <label>Content:</label>
+                            <textarea id="content" name="content">{{ selected_template.content }}</textarea>
+                            <span id="contentError" class="error-message"></span>
+                        </div>
+                        <div class="nice-form-group">
+                            <label>Footer:</label>
+                            <textarea id="footer" name="footer">{{ selected_template.footer }}</textarea>
+                            <span id="footerError" class="error-message"></span>
+                        </div>
+                        <div class="nice-form-group">
+                            <button class="btn btn-primary" type="button" id="saveButton">Save {% if selected_template.id == 3%} And Send {% endif %}</button>
+                        </div>
+                    </form>
+                    
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+                    <script>
+                        $(document).ready(function () {
+                            // Handle the save button click
+                            $('#saveButton').on('click', function () {
+                                var formData = {
+                                    template_id: $('#emailTemplateDropdown').val(),
+                                    title: $('#title').val(),
+                                    subject: $('#subject').val(),
+                                    content: $('#content').val(),
+                                    footer: $('#footer').val(),
+                                };
+                        
+                                $.ajax({
+                                    url: '/save-email-template/',  // Change this to your actual save URL
+                                    method: 'POST',
+                                    data: JSON.stringify(formData),
+                                    contentType: 'application/json',
+                                    headers: {
+                                        'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+                                    },
+                                    success: function (response) {
+                                        if (response.status === 'success') {
+                                            Swal.fire({
+                                                title: 'Success',
+                                                text: response.message,
+                                                icon: 'success',
+                                                confirmButtonText: 'OK'
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    location.reload(); // Refresh the page
+                                                }
+                                            });
+                                        } else {
+                                            Swal.fire({
+                                                title: 'Error',
+                                                text: response.message,
+                                                icon: 'error',
+                                                confirmButtonText: 'OK'
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    location.reload(); // Refresh the page
+                                                }
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: 'An error occurred while saving the template.',
+                                            icon: 'error',
+                                            confirmButtonText: 'OK'
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload(); // Refresh the page
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+                        });
+                        </script>
+                        
+                    
+                    
+</div> <!-- Closing card-block -->
+</div> <!-- Closing card -->
+</div> <!-- Closing col-sm-12 -->
+</div> <!-- Closing row -->
+</div> 
+{% endblock %}

@@ -1,0 +1,122 @@
+
+   {% extends "base.html" %}
+   {% block content %}
+   <!-- End Navbar -->
+    <section class="features-section">
+      <div class="container">
+          <div class="features-grid">
+              <a href="{%url 'report_admin' %}" class="feature-card">
+                  <h5 >Views</h5>
+              </a>
+              <a href="{%url 'job_report'%}" class="feature-card">
+                  <h5>Job</h5>
+              </a>
+              <a href="{%url 'newsletter_subscribers_report'%}" class="feature-card">
+                  <h5>Subscribers</h5>
+              </a>
+              <a href="{% url 'internship_report'%}" class="feature-card active">
+                  <h5 style="color: #fff;">Internship</h5>
+              </a>
+              <a href="{% url 'contactus_report'%}" class="feature-card">
+                  <h5 >Contact Us</h5>
+              </a>
+          </div>
+      </div>
+  </section>
+  
+  <div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Internship Application Details</h6>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="row">
+                        <!-- Filter Form Column (if needed) -->
+                        <div class="col-12 col-md-6">
+                            <form method="GET" action="{% url 'internship_report' %}">
+                                <div class="d-flex align-items-center flex-wrap" style="margin: 10px;">
+                                    <div class="nice-form-group me-2">
+                                        <label for="start_date" class="small">Start Date:</label>
+                                        <input type="date" name="start_date" id="start_date" class="form-control form-control-sm" value="{{ request.GET.start_date }}">
+                                    </div>
+                                    <div class="nice-form-group">
+                                        <label for="end_date" class="small">End Date:</label>
+                                        <input type="date" name="end_date" id="end_date" class="form-control form-control-sm" value="{{ request.GET.end_date }}">
+                                    </div>
+                                </div>
+                                <div class="form-group mt-3" style="margin-left: 10px;">
+                                    <button type="submit" class="btn btn-primary btn-sm me-2">
+                                        <i class="fas fa-filter fa-lg" style="font-size: 1rem;"></i>
+                                    </button>
+                                    <a href="{% url 'internship_report' %}" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-times fa-lg" style="font-size: 1rem;"></i>
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Scrollable Table Container -->
+                    <div class="table-responsive">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Date</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Name</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Email</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Phone</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">College</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Domain</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Resume</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Agree to Terms</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Subscribe Me</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for submission in page_obj %}
+                                <tr>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ submission.created_at }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ submission.first_name }} {{ submission.last_name }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ submission.email_address }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ submission.phone_number }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ submission.department_college }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ submission.internship_domain }}</span></td>
+                                    <td class="align-middle text-center">
+                                        {% if submission.resume %}
+                                        <a class="text-secondary text-xs font-weight-bold" href="{{ submission.resume.url }}" target="_blank">View</a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ submission.agree_to_terms }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ submission.newsletter_subscription }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ submission.status }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination with clickable page numbers -->
+                    <div class="pagination-container text-center mt-3">
+                        <ul class="pagination justify-content-center">
+                            {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <a class="page-link">{{ num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>PineNews Details</h6>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="row">
+                        <!-- Add any additional info or stats here if needed -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrollable Table Container -->
+            <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Index Number</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Title</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Created At</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Learn More</th>
+                            <th class="text-center text-uppercase text-secondary font-weight-bolder" style="font-size: 1.2rem; opacity: 1;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for news in page_obj %}
+                        <tr>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ news.index_num }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ news.title }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ news.created_at }}</span></td>
+                            <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ news.learn_more }}</span></td>
+                            <td class="align-middle text-center">
+                                <form id="delete-form-{{ news.pk }}" action="{% url 'delete_pinenews' news.pk %}" method="POST" style="display: none;">
+                                    {% csrf_token %}
+                                </form>
+                                <a href="{% url 'edit_pinenews' news.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deletePineNews({{ news.pk }})">Delete</button>
+                                
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination with clickable page numbers -->
+            <div class="pagination-container text-center mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pcoded-inner-content">
+    <div class="main-body">
+        <div class="page-wrapper">
+            <div class="page-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Add Pine News</h5>
+                            </div>
+                            <div class="card-block">
+
+                               
+                                <form method="POST" style="margin: 25px;" enctype="multipart/form-data" novalidate onsubmit="return validateForm()">
+                                    {% csrf_token %}
+                                    
+                                    <div class="nice-form-group">
+                                        <label for="title">Title <span style="color: red;">*</span></label>
+                                        <input style="width: 42%;" type="text" name="title" id="title" required>
+                                        <div class="invalid-feedback-title invalid-feedback"></div>
+                                    </div>
+                                    
+                                    <div class="nice-form-group">
+                                        <label for="index_num">Index Number <span style="color: red;">*</span></label>
+                                        <input  type="number" id="index_num" name="index_num" required>
+                                        <div class="invalid-feedback-index invalid-feedback"></div>
+                                    </div>
+                                    
+                                    <div class="nice-form-group">
+                                        <label for="url">Learn More URL <span style="color: red;">*</span></label>
+                                        <input style="width: 42%" type="url" id="url" name="url" required>
+                                        <div class="invalid-feedback-url invalid-feedback"></div>
+                                    </div>
+                                    
+                                    <div class="nice-form-group">
+                                        <label for="content">Content <span style="color: red;">*</span></label>
+                                        <textarea id="content" name="content" required></textarea>
+                                        <div class="invalid-feedback-content invalid-feedback"></div>
+                                    </div>
+                                    
+                                    <div class="nice-form-group">
+                                        <label for="topic_covered">Topic Covered <span style="color: red;">*</span></label>
+                                        <textarea id="topic_covered" name="topic_covered" required></textarea>
+                                        <div class="invalid-feedback-topic invalid-feedback"></div>
+                                    </div>
+                                    
+                                    <div class="nice-form-group">
+                                        <label for="imageUpload">Upload Image <span style="color: red;">*</span></label>
+                                        <input type="file" multiple name="images" id="imageUpload" accept="image/*" required>
+                                        <div class="invalid-feedback-image invalid-feedback">Upload at least 1 image</div>
+                                    </div>
+                                    
+                                    <div id="imagePreview" class="row mt-3"></div>
+                                    
+                                    <div class="col-12">
+                                        <button class="btn btn-primary" type="submit">Submit form</button>
+                                    </div>
+                                    
+                                    {% if messages %}
+                                    <script>
+                                        const messages = {{ messages|safe }};
+                                        if (messages.length > 0) {
+                                            messages.forEach(message => {
+                                                Swal.fire({
+                                                    icon: message.tags === 'success' ? 'success' : 'error',
+                                                    title: message.tags.charAt(0).toUpperCase() + message.tags.slice(1),
+                                                    text: message.message,
+                                                    confirmButtonText: 'OK'
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        window.location.href = '/pine_news/'; // Redirect to the desired page
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    </script>
+                                    {% endif %}
+                                </form>
+                                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+                                    <script>
+                                        function validateForm() {
+                                            // Clear previous error messages
+                                            const errorMessages = document.querySelectorAll('.invalid-feedback');
+                                            errorMessages.forEach(message => {
+                                                message.innerText = '';
+                                                message.style.display = 'none'; // Hide all error messages initially
+                                            });
+                                        
+                                            // Get the input field values
+                                            const title = document.getElementById('title').value.trim();
+                                            const url = document.getElementById('url').value.trim();
+                                            const content = document.getElementById('content').value.trim();
+                                            const topicCovered = document.getElementById('topic_covered').value.trim();
+                                            const indexNum = document.getElementById('index_num').value.trim();
+                                            const images = document.getElementById('imageUpload').files; // To check file upload
+                                        
+                                            let isValid = true;
+                                        
+                                            // Validate Title
+                                            if (title === '') {
+                                                document.querySelector('.invalid-feedback-title').innerText = 'Title is required.';
+                                                document.querySelector('.invalid-feedback-title').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            } else if (!/[a-zA-Z]/.test(title)) {
+                                                document.querySelector('.invalid-feedback-title').innerText = 'Title must contain at least one alphabetic character.';
+                                                document.querySelector('.invalid-feedback-title').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            }
+                                        
+                                            // Validate Learn More URL
+                                            if (url === '') {
+                                                document.querySelector('.invalid-feedback-url').innerText = 'URL is required.';
+                                                document.querySelector('.invalid-feedback-url').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            } else if (!/[a-zA-Z]/.test(url)) {
+                                                document.querySelector('.invalid-feedback-url').innerText = 'URL must contain at least one alphabetic character.';
+                                                document.querySelector('.invalid-feedback-url').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            }
+                                        
+                                            // Validate Content
+                                            if (content === '') {
+                                                document.querySelector('.invalid-feedback-content').innerText = 'Content is required.';
+                                                document.querySelector('.invalid-feedback-content').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            } else if (!/[a-zA-Z]/.test(content)) {
+                                                document.querySelector('.invalid-feedback-content').innerText = 'Content must contain at least one alphabetic character.';
+                                                document.querySelector('.invalid-feedback-content').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            }
+                                        
+                                            // Validate Topic Covered
+                                            if (topicCovered === '') {
+                                                document.querySelector('.invalid-feedback-topic').innerText = 'Topic Covered is required.';
+                                                document.querySelector('.invalid-feedback-topic').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            } else if (!/[a-zA-Z]/.test(topicCovered)) {
+                                                document.querySelector('.invalid-feedback-topic').innerText = 'Topic Covered must contain at least one alphabetic character.';
+                                                document.querySelector('.invalid-feedback-topic').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            }
+                                        
+                                            // Validate Index Number
+                                            if (indexNum === '') {
+                                                document.querySelector('.invalid-feedback-index').innerText = 'Index Number is required.';
+                                                document.querySelector('.invalid-feedback-index').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            }
+                                        
+                                            // Validate Image Upload
+                                            if (images.length === 0) {
+                                                document.querySelector('.invalid-feedback-image').innerText = 'Upload at least 1 image.';
+                                                document.querySelector('.invalid-feedback-image').style.display = 'block'; // Show error message
+                                                isValid = false;
+                                            }
+                                        
+                                            return isValid; // Prevent form submission if validation fails
+                                        }
+                                        
+                                        
+                                        
+                                    
+                                        // Listen for form submission
+                                        $('form').on('submit', function(event) {
+                                            event.preventDefault(); // Prevent the default form submission
+                                    
+                                            if (validateForm()) {
+                                                const formData = new FormData(this);
+                                                
+                                                $.ajax({
+                                                    url: $(this).attr('action'),
+                                                    type: 'POST',
+                                                    data: formData,
+                                                    processData: false,
+                                                    contentType: false,
+                                                    headers: {
+                                                        'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token in headers
+                                                    },
+                                                    success: function(response) {
+                                                        if (response.status === 'success') {
+                                                            Swal.fire({
+                                                                icon: 'success',
+                                                                title: 'Success!',
+                                                                text: 'Your Pine News has been submitted successfully!',
+                                                                confirmButtonText: 'OK'
+                                                            }).then(() => {
+                                                                window.location.reload(); // Refresh the page after the pop-up is closed
+                                                            });
+                                                        }
+                                                    },
+                                                    error: function(xhr) {
+                                                        const response = xhr.responseJSON;
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Error!',
+                                                            text: 'An error occurred: ' + (response.message || 'Unknown error'),
+                                                            confirmButtonText: 'OK'
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    </script>
+
+                                        <script>
+
+                                        </script>
+                                        
+                                    
+                            </script>
+                                <script>
+                                    document.getElementById('imageUpload').addEventListener('change', function(event) {
+                                        const previewContainer = document.getElementById('imagePreview');
+                                        previewContainer.innerHTML = ''; 
+                                        const files = Array.from(event.target.files);
+                                        
+                                        const newFileList = new DataTransfer(); // to store updated file list for cancel functionality
+                                        
+                                        files.forEach((file, index) => {
+                                            const reader = new FileReader();
+                                            reader.onload = function(e) {
+                                                const imageContainer = document.createElement('div');
+                                                imageContainer.classList.add('col-sm-3', 'mb-3', 'position-relative');
+                                    
+                                                const img = document.createElement('img');
+                                                img.src = e.target.result;
+                                                img.classList.add('img-thumbnail');
+                                                img.style.width = '100%';
+                                    
+                                                const cancelButton = document.createElement('button');
+                                                cancelButton.classList.add('btn', 'btn-danger', 'btn-sm', 'position-absolute', 'top-0', 'end-0');
+                                                cancelButton.textContent = 'Cancel';
+                                    
+                                                cancelButton.onclick = function() {
+                                                    imageContainer.remove();
+                                                    files.splice(index, 1);
+                                    
+                                                    // Rebuild the DataTransfer object with remaining files
+                                                    const updatedFileList = new DataTransfer();
+                                                    files.forEach((file) => {
+                                                        updatedFileList.items.add(file);
+                                                    });
+                                                    document.getElementById('imageUpload').files = updatedFileList.files;
+                                                };
+                                    
+                                                imageContainer.appendChild(img);
+                                                imageContainer.appendChild(cancelButton);
+                                                previewContainer.appendChild(imageContainer);
+                                            };
+                                            reader.readAsDataURL(file); // Convert the file to base64 for preview
+                                
+                                            // Add the file to newFileList (so it's kept for later use)
+                                            newFileList.items.add(file);
+                                        });
+                                        
+                                        // Update the input's files with the new FileList that includes only the remaining files
+                                        document.getElementById('imageUpload').files = newFileList.files;
+                                    });
+                                </script>
+                                
+                               
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="styleSelector">
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function deletePineNews(pk) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/pinenews/delete/${pk}/`,  // Update with your correct URL pattern
+                        type: 'POST',
+                        data: {
+                            'pk': pk,
+                            'csrfmiddlewaretoken': getCookie('csrftoken') // Include CSRF token
+                        },
+                        success: function(data) {
+                            if (data.success) {
+                                Swal.fire("Deleted!", "Your Pine News has been deleted.", "success");
+                                // Refresh the page after a delay
+                                setTimeout(() => {
+                                    location.reload(); // Refresh the page after deletion
+                                }, 2000);
+                            } else {
+                                Swal.fire("Error!", data.message, "error");
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire("Error!", "There was an error deleting the Pine News.", "error");
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Utility function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+</script>
+
+{% endblock %}

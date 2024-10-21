@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Culture</h5>
+                </div>
+                <div class="card-block">
+                    <div style="overflow-x: auto;">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Index Number</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Title</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Created At</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Learn More</th>
+                                    <th class="text-center text-uppercase text-secondary font-weight-bolder">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for news in page_obj %}
+                                <tr>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ forloop.counter }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ news.title }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ news.created_at }}</span></td>
+                                    <td class="align-middle text-center"><span class="text-secondary text-xs font-weight-bold">{{ news.url }}</span></td>
+                                    <td class="align-middle text-center">
+                                        <a href="{% url 'edit_life_at_pinesphere' news.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                        <form action="{% url 'delete_life_at_pinesphere' news.pk %}" method="POST" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="deletePineNews({{ news.pk }})">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container text-center mt-3">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Culture</h5>
+                </div>
+                <div class="card-block">
+                    <form  style="margin: 25px ;"method="post" enctype="multipart/form-data" id="myForm">
+                        {% csrf_token %}
+                    
+                        <!-- Title -->
+                        <div class="nice-form-group">
+                            <label for="title">Title:</label>
+                            <input type="text" name="title" id="title" required placeholder="Enter title">
+                            {% if form.title.errors %}
+                                <div class="error">{{ form.title.errors }}</div>
+                            {% endif %}
+                            <div class="error-message" id="titleError"></div>
+                        </div>
+                    
+                        <!-- Content -->
+                        <div class="nice-form-group">
+                            <label for="content">Content:</label>
+                            <textarea name="content" id="content" required placeholder="Enter content"></textarea>
+                            {% if form.content.errors %}
+                                <div class="error">{{ form.content.errors }}</div>
+                            {% endif %}
+                            <div class="error-message" id="contentError"></div>
+                        </div>
+                    
+                        <!-- Image -->
+                        <div class="nice-form-group">
+                            <label for="image">Image:</label>
+                            <input type="file" name="image" id="image" accept="image/*" required>
+                            {% if form.image.errors %}
+                                <div class="error">{{ form.image.errors }}</div>
+                            {% endif %}
+                        </div>
+                    
+                        <!-- URL -->
+                        <div class="nice-form-group">
+                            <label for="url">URL:</label>
+                            <input type="url" name="url" id="url" required placeholder="Enter URL">
+                            {% if form.url.errors %}
+                                <div class="error">{{ form.url.errors }}</div>
+                            {% endif %}
+                            <div class="error-message" id="urlError"></div>
+                        </div>
+                    <div class="nice-form-group">
+            
+                        <button class="btn btn-primary" type="submit">
+                            Create
+                        </button>
+                    </div>
+                    </form>
+                                   </div> <!-- End of card-block -->
+            </div> <!-- End of card -->
+        </div> <!-- End of col-sm-12 -->
+    </div> <!-- End of row -->
+</div> <!-- End of page-body -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function() {
+        // Handle form submission
+        $('#myForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent form from submitting the traditional way
+
+            // Clear previous error messages
+            $('#titleError').hide();
+            $('#contentError').hide();
+            $('#urlError').hide();
+
+            // Get form data
+            var formData = new FormData(this);
+
+            // Validate input fields
+            var title = $('#title').val();
+            var content = $('#content').val();
+            var url = $('#url').val();
+
+            // Function to check if a string contains at least one alphabetical character
+            function hasAlpha(str) {
+                return /[a-zA-Z]/.test(str);
+            }
+
+            // Validate each field and show error messages if validation fails
+            var isValid = true;
+
+            if (!hasAlpha(title)) {
+                $('#titleError').text("Title must contain at least one alphabetical character.").css("color", "red").show();
+                isValid = false;
+            }
+            
+            if (!hasAlpha(content)) {
+                $('#contentError').text("Content must contain at least one alphabetical character.").css("color", "red").show();
+                isValid = false;
+            }
+            
+            if (!hasAlpha(url)) {
+                $('#urlError').text("URL must contain at least one alphabetical character.").css("color", "red").show();
+                isValid = false;
+            }
+            
+
+            // If the form is valid, submit it via AJAX
+            if (isValid) {
+                $.ajax({
+                    url: '/life_at_pine_post/',  // Replace with your actual URL
+                    type: 'POST',
+                    data: formData,
+                    processData: false,  // Required for FormData
+                    contentType: false,  // Required for FormData
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),  // Add CSRF token from cookies
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            // Show SweetAlert success message
+                            Swal.fire({
+                                title: 'Success!',
+                                text: data.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Reload the page when OK is clicked
+                                    location.reload();
+                                }
+                            });
+                        } else {
+                            // Show SweetAlert error message
+                            Swal.fire({
+                                title: 'Error!',
+                                text: data.message,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function() {
+                        // Show generic error message if AJAX request fails
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An unexpected error occurred.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            }
+        });
+
+        // Handle delete request
+        window.deletePineNews = function(pk) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to delete this entry?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Perform the AJAX delete request with jQuery
+                    $.ajax({
+                        url: `/life-at-pinesphere/delete/${pk}/`, // Adjust URL as needed
+                        type: 'POST',
+                        dataType: 'json',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken') // Use CSRF token from cookies
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    // Refresh the page after success
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: response.message,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'There was an error processing your request.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
+                }
+            });
+        };
+    });
+
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Edit Client</h5>
+                </div>
+                <div class="card-block">
+                    <!-- Content goes here -->
+                    <form style="margin: 25px;" id="myForm" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Index Number -->
+                        <div class="nice-form-group">
+                            <label for="id_index_num">Index Number:</label>
+                            <input type="number" id="id_index_num" name="index_num" value="{{ client.index_num }}" required>
+                            <div class="error-message" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <!-- Image -->
+                        <div class="nice-form-group">
+                            <label for="id_image">Image:</label>
+                            <input type="file" id="id_image" name="image" accept="image/*">
+                            {% if client.image %}
+                                <div style="margin: 20px;">
+                                    <p>Current Image:</p>
+                                    <img src="{{ client.image.url }}" alt="Current Image" style="max-width: 100px; margin-bottom: 10px;">
+                                </div>
+                            {% endif %}
+                            <div class="error-message" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <!-- Image 2 -->
+                        <div class="nice-form-group">
+                            <label for="id_image2">Image 2:</label>
+                            <input type="file" id="id_image2" name="image2" accept="image/*">
+                            {% if client.image %}
+                            <div style="margin: 20px;">
+                                <p>Current Image:</p>
+                                <img src="{{ client.image2.url }}" alt="Current Image" style="max-width: 100px; margin: 10px;">
+                            </div>
+                        {% endif %}
+                            <div class="error-message" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <!-- Title -->
+                        <div class="nice-form-group">
+                            <label for="id_Title">Title:</label>
+                            <input type="text" id="id_Title" name="Title" value="{{ client.Title }}" required>
+                            <div class="error-message" style="color: red; font-size: 14px;"></div>
+                        </div>
+                    
+                        <!-- URL -->
+                        <div class="nice-form-group">
+                            <label for="id_url">URL:</label>
+                            <input type="url" id="id_url" name="url" placeholder="Enter a valid URL here" value="{{ client.url }}" required>
+                            <div class="error-message" style="color: red; font-size: 14px;"></div>
+                        </div>
+                        <div class="nice-form-group">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div> <!-- Closing card-block -->
+            </div> <!-- Closing card -->
+        </div> <!-- Closing col-sm-12 -->
+    </div> <!-- Closing row -->
+</div> <!-- Closing page-body -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+        // Prevent default form submission
+        event.preventDefault(); 
+        
+        // Clear previous error messages
+        const errorMessages = document.querySelectorAll(".error-message");
+        errorMessages.forEach(msg => msg.innerText = '');
+
+        // Get the form fields
+        const title = document.getElementById("id_Title").value;
+        const url = document.getElementById("id_url").value;
+
+        // Regex to check for at least one alphabetic character
+        const alphaRegex = /[a-zA-Z]/;
+        let valid = true;
+
+        // Validate each field and display messages
+        if (!alphaRegex.test(title)) {
+            document.querySelector("#id_Title + .error-message").innerText = "Title must contain at least one alphabetic character.";
+            valid = false;
+        }
+        if (!alphaRegex.test(url)) {
+            document.querySelector("#id_url + .error-message").innerText = "URL must contain at least one alphabetic character.";
+            valid = false;
+        }
+
+        // If all validations pass, submit the form via AJAX
+        if (valid) {
+            // Create a FormData object from the form
+            const formData = new FormData(this);
+            
+            // Send the form data via AJAX
+            fetch("{% url 'edit_client_page' client.id %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',  // Add CSRF token for security
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Show success message using Swal.fire
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: data.message,
+                    }).then(() => {
+                        // Redirect to manage_client_pages after closing the alert
+                        window.location.href = "{% url 'client' %}";
+                    });
+                } else if (data.status === 'error') {
+                    // Show error message using Swal.fire
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: data.message,
+                    });
+                }
+            })
+            .catch(error => {
+                // Show an error message if the AJAX request fails
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong with the request!',
+                });
+            });
+        }
+    });
+</script>
+
+{% endblock %}

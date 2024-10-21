@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+ 
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Basic Form Inputs card start -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Edit Pine News</h5>
+                </div>
+                <div class="card-block">
+                    <form method="POST" style ="margin: 25px;" enctype="multipart/form-data" novalidate onsubmit="return validateForm()">
+                        {% csrf_token %}
+                        
+                        <div class="nice-form-group">
+                            <label for="title">Title <span style="color: red;">*</span></label>
+                            <input style="width: 42%;" type="text" name="title" id="title" required value="{{ pine_news.title }}">
+                            <div class="invalid-feedback-title invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="nice-form-group">
+                            <label for="url">Learn More URL <span style="color: red;">*</span></label>
+                            <input style="width: 42%;" type="text" id="url" name="url" required value="{{ pine_news.learn_more }}">
+                            <div class="invalid-feedback-url invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="nice-form-group">
+                            <label for="index_num">Index Number <span style="color: red;">*</span></label>
+                            <input type="number" id="index_num" name="index_num" required value="{{ pine_news.index_num }}">
+                            <div class="invalid-feedback-index invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="nice-form-group">
+                            <label for="content">Content <span style="color: red;">*</span></label>
+                            <textarea style="height: 100%;" id="content" name="content" required>{{ pine_news.content }}</textarea>
+                            <div class="invalid-feedback-content invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="nice-form-group">
+                            <label for="topic_covered">Topic Covered <span style="color: red;">*</span></label>
+                            <textarea id="topic_covered" name="topic_covered" required>{{ pine_news.topic_covered }}</textarea>
+                            <div class="invalid-feedback-topic invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="nice-form-group">
+                            <label for="imageUpload">Upload Image <span style="color: red;">*</span></label>
+                            
+                            <!-- Show the existing image if available -->
+                            <div id="image-preview">
+                                {% if existing_image %}
+                                    <img src="{{ existing_image }}" alt="Current Image" style="max-width: 300px; max-height: 300px;">
+                                {% endif %}
+                            </div>
+                            
+                            <input style="width: 42%;" type="file" accept="image/*" name="images" id="imageUpload">
+                            <div class="invalid-feedback-image invalid-feedback">Upload at least 1 image</div>
+                        </div>
+                        
+                        <div class="nice-form-group">
+                            <button class="btn btn-primary" type="submit">Submit form</button>
+                        </div>
+                    </form>
+
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script>
+                            function previewImage() {
+                                const fileInput = document.getElementById('imageUpload');
+                                const imagePreview = document.getElementById('image-preview');
+                            
+                                const file = fileInput.files[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    
+                                    reader.onload = function(e) {
+                                        imagePreview.innerHTML = '<img src="' + e.target.result + '" alt="Selected Image" style="max-width: 300px; max-height: 300px;">';
+                                    };
+                            
+                                    reader.readAsDataURL(file);
+                                }
+                            }
+                            </script>
+                            <script>
+                                $(document).ready(function() {
+                                    $('form').on('submit', function(event) {
+                                        event.preventDefault();  // Prevent the default form submission
+                                
+                                        if (validateForm()) {  // Call validateForm to check form validity
+                                            var formData = new FormData(this);  // Create a FormData object from the form
+                                
+                                            // Manually append the image file to FormData if not already appended
+                                            var imageInput = document.getElementById('imageUpload');
+                                            if (imageInput.files.length > 0) {
+                                                formData.append('image', imageInput.files[0]);  // Append the selected image file
+                                            }
+                                
+                                            $.ajax({
+                                                type: 'POST',
+                                                url: "{% url 'edit_pinenews' pine_news.id %}",  // Adjust the URL as necessary
+                                                data: formData,
+                                                contentType: false,  // Set content type to false for FormData
+                                                processData: false,  // Do not process data as a query string
+                                                headers: {
+                                                    'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token
+                                                },
+                                                success: function(response) {
+                                                    // Check response for success status
+                                                    if (response.status === 'success') {
+                                                        // SweetAlert2 success message
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: 'Update Successful',
+                                                            text: response.message,
+                                                            showConfirmButton: true,
+                                                            confirmButtonText: 'OK'
+                                                        }).then(function() {
+                                                            window.location.href = "{% url 'pinenews' %}";  // Redirect after success
+                                                        });
+                                                    } else {
+                                                        // SweetAlert2 error message for unsuccessful submission
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Submission Error',
+                                                            text: 'Error: ' + response.message,
+                                                            showConfirmButton: true,
+                                                            confirmButtonText: 'Try Again'
+                                                        });
+                                                    }
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    // SweetAlert2 error message for AJAX errors
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'An Error Occurred',
+                                                        text: 'An error occurred while submitting the form: ' + error,
+                                                        showConfirmButton: true,
+                                                        confirmButtonText: 'OK'
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                
+                                    // Function to validate the form
+                                    function validateForm() {
+                                        // Clear previous error messages
+                                        const errorMessages = document.querySelectorAll('.invalid-feedback');
+                                        errorMessages.forEach(message => message.style.display = 'none');
+                                    
+                                        // Get input field values
+                                        const title = document.getElementById('title').value;
+                                        const url = document.getElementById('url').value;
+                                        const content = document.getElementById('content').value;
+                                        const topicCovered = document.getElementById('topic_covered').value;
+                                        const indexNum = document.getElementById('index_num').value;
+                                        const images = document.getElementById('imageUpload').files;
+                                    
+                                        let isValid = true;
+                                    
+                                        // Validate Title
+                                        if (!title.trim()) {
+                                            const titleFeedback = document.querySelector('.invalid-feedback-title');
+                                            titleFeedback.innerText = 'Title is required.';
+                                            titleFeedback.style.display = 'block';
+                                            isValid = false;
+                                        } else if (!/[a-zA-Z]/.test(title)) {
+                                            const titleFeedback = document.querySelector('.invalid-feedback-title');
+                                            titleFeedback.innerText = 'Title must contain at least one alphabetic character.';
+                                            titleFeedback.style.display = 'block';
+                                            isValid = false;
+                                        }
+                                    
+                                        // Validate Learn More URL
+                                        if (!url.trim()) {
+                                            const urlFeedback = document.querySelector('.invalid-feedback-url');
+                                            urlFeedback.innerText = 'URL is required.';
+                                            urlFeedback.style.display = 'block';
+                                            isValid = false;
+                                        } else if (!/[a-zA-Z]/.test(url)) {
+                                            const urlFeedback = document.querySelector('.invalid-feedback-url');
+                                            urlFeedback.innerText = 'URL must contain at least one alphabetic character.';
+                                            urlFeedback.style.display = 'block';
+                                            isValid = false;
+                                        }
+                                    
+                                        // Validate Content
+                                        if (!content.trim()) {
+                                            const contentFeedback = document.querySelector('.invalid-feedback-content');
+                                            contentFeedback.innerText = 'Content is required.';
+                                            contentFeedback.style.display = 'block';
+                                            isValid = false;
+                                        } else if (!/[a-zA-Z]/.test(content)) {
+                                            const contentFeedback = document.querySelector('.invalid-feedback-content');
+                                            contentFeedback.innerText = 'Content must contain at least one alphabetic character.';
+                                            contentFeedback.style.display = 'block';
+                                            isValid = false;
+                                        }
+                                    
+                                        // Validate Topic Covered
+                                        if (!topicCovered.trim()) {
+                                            const topicFeedback = document.querySelector('.invalid-feedback-topic');
+                                            topicFeedback.innerText = 'Topic Covered is required.';
+                                            topicFeedback.style.display = 'block';
+                                            isValid = false;
+                                        } else if (!/[a-zA-Z]/.test(topicCovered)) {
+                                            const topicFeedback = document.querySelector('.invalid-feedback-topic');
+                                            topicFeedback.innerText = 'Topic Covered must contain at least one alphabetic character.';
+                                            topicFeedback.style.display = 'block';
+                                            isValid = false;
+                                        }
+                                    
+                                        // Validate Index Number (if needed)
+                                        if (!indexNum.trim()) {
+                                            const indexFeedback = document.querySelector('.invalid-feedback-index');
+                                            indexFeedback.innerText = 'Index Number is required.';
+                                            indexFeedback.style.display = 'block';
+                                            isValid = false;
+                                        }
+                                    
+                                        // Validate Image Upload
+                                        
+                                    
+                                        return isValid;  // Return the validity status
+                                    }
+                                    
+                                });
+                                
+                                // Bootstrap form validation
+                                (function() {
+                                    'use strict';
+                                    var forms = document.querySelectorAll('.needs-validation');
+                                    Array.prototype.slice.call(forms).forEach(function(form) {
+                                        form.addEventListener('submit', function(event) {
+                                            if (!form.checkValidity()) {
+                                                event.preventDefault();
+                                                event.stopPropagation();
+                                            }
+                                            form.classList.add('was-validated');
+                                        }, false);
+                                    });
+                                })();
+                            </script>  
+                    
+                    <script>
+                        // Remove 'required' attribute from content field if necessary
+                        document.getElementById('id_content').removeAttribute('required');
+                    </script>
+                    
+                </div>
+            </div>
+            <!-- Basic Form Inputs card end -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}
